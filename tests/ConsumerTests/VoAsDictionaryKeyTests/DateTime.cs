@@ -1,10 +1,6 @@
-﻿#if NET6_0_OR_GREATER
-#nullable disable
+﻿#nullable disable
 
-using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Vogen;
 
 namespace ConsumerTests.VoAsDictionaryKeyTests;
 
@@ -37,5 +33,3 @@ public class DateTimeTests
         deserializedDictionary[EmployeeTypeDateTime.Operator].Should().Contain(new Employee("Dave Angel", 42));
     }
 }
-
-#endif

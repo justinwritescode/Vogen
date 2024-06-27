@@ -5,7 +5,7 @@ namespace Vogen
 {
     using System;
 
-    // Generic attributes were introduced in .NET 5 and C# 9
+    // Generic attributes were introduced in C# 11
     /// <summary>
     /// Marks a type as a Value Object. The type should be partial so that the
     /// source generator can augment the type with equality and validation.
@@ -27,20 +27,25 @@ namespace Vogen
             CastOperator toPrimitiveCasting = CastOperator.Unspecified,
             CastOperator fromPrimitiveCasting = CastOperator.Unspecified,
             ParsableForStrings parsableForStrings = ParsableForStrings.Unspecified,
-            ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified)
-            : base(
-                typeof(T),
-                conversions,
-                throws,
-                customizations,
-                deserializationStrictness,
-                debuggerAttributes,
-                comparison,
-                stringComparers,
-                toPrimitiveCasting,
-                fromPrimitiveCasting,
-                parsableForStrings,
-                parsableForPrimitives)
+            ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified,
+            TryFromGeneration tryFromGeneration = TryFromGeneration.Unspecified,
+            IsInitializedMethodGeneration isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified,
+            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified) : base(
+            typeof(T),
+            conversions,
+            throws,
+            customizations,
+            deserializationStrictness,
+            debuggerAttributes,
+            comparison,
+            stringComparers,
+            toPrimitiveCasting,
+            fromPrimitiveCasting,
+            parsableForStrings,
+            parsableForPrimitives,
+            tryFromGeneration,
+            isInitializedMethodGeneration,
+            primitiveEqualityGeneration)
         {
         }
     }
@@ -68,8 +73,15 @@ namespace Vogen
             CastOperator toPrimitiveCasting = CastOperator.Unspecified,
             CastOperator fromPrimitiveCasting = CastOperator.Unspecified,
             ParsableForStrings parsableForStrings = ParsableForStrings.Unspecified,
-            ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified)
+            ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified,
+            TryFromGeneration tryFromGeneration = TryFromGeneration.Unspecified,
+            IsInitializedMethodGeneration isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified,
+            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified)
         {
+            // DO NOT ADD PARAMETERS HERE, INSTEAD, CREATE OVERLOADS (at least until a new major version).
+            // This is because some users use reflection to find this attribute, and changing the amount
+            // of parameters is a binary-breaking change. See https://github.com/dotnet/runtime/issues/103722
+            // for more information.
         }
     }
 }

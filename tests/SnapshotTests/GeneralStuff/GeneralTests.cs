@@ -5,9 +5,226 @@ using Vogen;
 
 namespace SnapshotTests.GeneralStuff;
 
+// contrib: An ideal place to start a new feature. Write a new test for the feature here to get it working, then
+// add more tests. Move these tests if there are several of them, and it makes sense to group them.
+
 [UsesVerify]
 public class GeneralTests
 {
+    [Fact]
+    public async Task Can_specify_swashbuckle_filter_generation_for_openapi()
+    {
+        var source = $$"""
+
+                     using System;
+                     using Vogen;
+
+                     [assembly: VogenDefaults(openApiSchemaCustomizations: OpenApiSchemaCustomizations.GenerateSwashbuckleSchemaFilter)]
+                     
+                       [ValueObject]
+                       public partial class MyVo { }
+
+                     """;
+
+            await new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.AspNetCore8_0);
+    }
+
+    [Fact]
+    public async Task Can_specify_swashbuckle_MapType_extension_method_generation_for_openapi()
+    {
+        var source = $$"""
+
+                     using System;
+                     using Vogen;
+
+                     [assembly: VogenDefaults(openApiSchemaCustomizations: OpenApiSchemaCustomizations.GenerateSwashbuckleMappingExtensionMethod)]
+                     
+                       [ValueObject]
+                       public partial class MyVoInt { }
+
+                       [ValueObject<float>]
+                       public partial class MyVoFloat { }
+
+                       [ValueObject<decimal>]
+                       public partial class MyVoDecimal { }
+
+                       [ValueObject<double>]
+                       public partial class MyVoDouble { }
+
+                       [ValueObject<string>]
+                       public partial class MyVoString { }
+
+                       [ValueObject<bool>]
+                       public partial class MyVoBool { }
+
+                     """;
+
+            await new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.AspNetCore8_0);
+    }
+
+    [Fact]
+    public async Task Can_specify_both_swashbuckle_filter_and_MapType_extension_method_generation_for_openapi()
+    {
+        var source = $$"""
+
+                     using System;
+                     using Vogen;
+
+                     [assembly: VogenDefaults(openApiSchemaCustomizations: 
+                        OpenApiSchemaCustomizations.GenerateSwashbuckleMappingExtensionMethod | 
+                        OpenApiSchemaCustomizations.GenerateSwashbuckleSchemaFilter)]
+                     
+                       [ValueObject]
+                       public partial class MyVoInt { }
+
+                       [ValueObject<float>]
+                       public partial class MyVoFloat { }
+
+                       [ValueObject<decimal>]
+                       public partial class MyVoDecimal { }
+
+                       [ValueObject<double>]
+                       public partial class MyVoDouble { }
+
+                       [ValueObject<string>]
+                       public partial class MyVoString { }
+
+                       [ValueObject<bool>]
+                       public partial class MyVoBool { }
+
+                     """;
+
+            await new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.AspNetCore8_0);
+    }
+
+    [Theory]
+    [InlineData("struct")]
+    [InlineData("class")]
+    [InlineData("record struct")]
+    [InlineData("record class")]
+    public async Task Can_specify_a_factory_method_for_wrappers_for_guids(string type)
+    {
+        var source = $$"""
+
+                     using System;
+                     using Vogen;
+
+                     [assembly: VogenDefaults(customizations: Customizations.AddFactoryMethodForGuids)]
+                     
+                       [ValueObject<Guid>]
+                       public partial {{type}} MyVo { }
+
+                     """;
+
+            await new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .CustomizeSettings(s => s.UseFileName(TestHelper.ShortenForFilename(type)))
+                .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public async Task ServiceStackDotTextConversion_generates_static_constructor_for_strings()
+    {
+        var source = @"using Vogen;
+  [ValueObject(conversions: Conversions.ServiceStackDotText, underlyingType: typeof(string))]
+  public partial struct MyVo { }
+";
+
+        await RunTest(source);
+
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.Net8_0);
+    }
+
+    [Fact]
+    public async Task ServiceStackDotTextConversion_generates_static_constructor_for_non_strings()
+    {
+        var source = @"using Vogen;
+  [ValueObject(conversions: Conversions.ServiceStackDotText, underlyingType: typeof(int))]
+  public partial struct MyVo { }
+";
+
+        await RunTest(source);
+
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                // .WithPackage(new NuGetPackage("ServiceStack.Text", "8.2.2", "lib/net8.0" ))
+                .RunOn(TargetFramework.Net8_0);
+    }
+
+    [Fact]
+    public async Task ServiceStackDotTextConversion_generates_static_constructor_for_time_related_primitives()
+    {
+        var source = @"using System;
+  using Vogen;
+  [ValueObject(conversions: Conversions.ServiceStackDotText, underlyingType: typeof(TimeOnly))]
+  public partial struct MyVo { }
+";
+
+        await RunTest(source);
+
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.Net8_0);
+    }
+
+    [Fact]
+    public async Task ServiceStackDotTextConversion_generates_static_constructor_for_date_time()
+    {
+        var source = @"using System;
+  using Vogen;
+  [ValueObject(conversions: Conversions.ServiceStackDotText, underlyingType: typeof(DateTime))]
+  public partial struct MyVo { }
+";
+
+        await RunTest(source);
+
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.Net8_0);
+    }
+
+    [Fact]
+    public async Task Can_use_derived_ValueObjectAttribute()
+    {
+        var source = @"using System;
+  using Vogen;
+
+public class IntVoAttribute : ValueObjectAttribute<int>
+{
+}
+
+  [IntVo]
+  public partial struct MyVo { }
+
+internal class C
+{
+    C() {
+        MyVo.From(123);
+    }
+}
+";
+
+        await RunTest(source);
+
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .IgnoreInitialCompilationErrors()
+                .RunOn(TargetFramework.Net8_0);
+    }
+
     [Fact]
     public async Task EFCore_generated_stuff()
     {
@@ -154,6 +371,32 @@ public readonly partial record struct CustomerId
 namespace Whatever;
 
 [ValueObject(typeof(string), toPrimitiveCasting: CastOperator.Implicit, fromPrimitiveCasting: CastOperator.None)]
+public partial class MyVo { }
+";
+
+        return RunTest(source);
+    }
+
+    [Fact]
+    public Task No_is_initialized_method()
+    {
+        var source = @"using Vogen;
+namespace Whatever;
+
+[ValueObject(isInitializedMethodGeneration: IsInitializedMethodGeneration.Omit)]
+public partial class MyVo { }
+";
+
+        return RunTest(source);
+    }
+
+    [Fact]
+    public Task With_is_initialized_method()
+    {
+        var source = @"using Vogen;
+namespace Whatever;
+
+[ValueObject(isInitializedMethodGeneration: IsInitializedMethodGeneration.Generate)]
 public partial class MyVo { }
 ";
 
@@ -484,6 +727,34 @@ public partial struct @class
                 .WithSource(source)
                 .RunOn(TargetFramework.Net8_0);
         
+    }
+
+    [Fact]
+    public Task Generates_SystemTextJson_factory()
+    {
+        return RunTest(
+            """
+            using Vogen;
+            using System;
+
+            namespace Whatever;
+
+            [ValueObject<int>]
+            public partial struct MyClass1
+            {
+            }
+
+            [ValueObject<int>]
+            public partial struct MyClass2
+            {
+            }
+
+            """);
+        
+        static Task RunTest(string source) =>
+            new SnapshotRunner<ValueObjectGenerator>()
+                .WithSource(source)
+                .RunOn(TargetFramework.Net8_0);
     }
 
     [Fact]

@@ -1,6 +1,9 @@
 ﻿using System.Globalization;
 using FluentAssertions.Execution;
 
+// The notion of 'Instances' is now obsolete. Instead, just use `new` (or `From`)
+// in the constructor of your value objects.
+
 namespace ConsumerTests.Instances;
 
 [ValueObject(typeof(DateTime))]
@@ -87,7 +90,7 @@ public class InstanceTests
             using var _ = new AssertionScope();
 
             DateTimeOffsetInstance.iso8601_1.Value.UtcDateTime.Should()
-                .Be(DateTime.Parse("2022-12-13", null, DateTimeStyles.RoundtripKind));
+                .Be(DateTime.Parse("2022-12-13", null, DateTimeStyles.RoundtripKind).ToUniversalTime());
             DateTimeOffsetInstance.iso8601_2.Value.Should().Be(new DateTimeOffset(2022, 12, 13, 13, 14, 15, TimeSpan.Zero));
             DateTimeOffsetInstance.ticks_as_long.Value.Should().Be(new DateTimeOffset(2022, 12, 13, 0, 0, 0, TimeSpan.Zero));
             DateTimeOffsetInstance.ticks_as_int.Value.Should().Be(new DateTimeOffset(2147483647, TimeSpan.Zero));

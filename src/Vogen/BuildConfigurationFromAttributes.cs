@@ -15,7 +15,6 @@ internal class BuildConfigurationFromAttributes
     private readonly AttributeData _matchingAttribute;
 
     private readonly List<Diagnostic> _diagnostics;
-    // private readonly VogenConfigurationBuildResult _buildResult;
 
     private INamedTypeSymbol? _invalidExceptionType;
     private INamedTypeSymbol? _underlyingType;
@@ -30,6 +29,13 @@ internal class BuildConfigurationFromAttributes
     private bool _disableStackTraceGenerationInDebug;
     private ParsableForStrings _parsableForStrings; 
     private ParsableForPrimitives _parsableForPrimitives; 
+    private TryFromGeneration _tryFromGeneration; 
+    private IsInitializedMethodGeneration _isInitializedMethodGeneration;
+    private SystemTextJsonConverterFactoryGeneration _systemTextJsonConverterFactoryGeneration;
+    private StaticAbstractsGeneration _staticAbstractsGeneration;
+    private OpenApiSchemaCustomizations _openApiSchemaCustomizations;
+    private bool _primitiveTypeMustBeExplicit;
+    private PrimitiveEqualityGeneration _primitiveEqualityGeneration;
 
     private BuildConfigurationFromAttributes(AttributeData att)
     {
@@ -48,8 +54,15 @@ internal class BuildConfigurationFromAttributes
         _toPrimitiveCasting = CastOperator.Unspecified;
         _disableStackTraceGenerationInDebug = false;
         _hasErroredAttributes = false;
-        
-       _diagnostics = new List<Diagnostic>();
+        _tryFromGeneration = TryFromGeneration.Unspecified;
+        _isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified;
+        _systemTextJsonConverterFactoryGeneration = SystemTextJsonConverterFactoryGeneration.Unspecified;
+        _staticAbstractsGeneration = StaticAbstractsGeneration.Unspecified;
+        _openApiSchemaCustomizations = OpenApiSchemaCustomizations.Unspecified;
+        _primitiveTypeMustBeExplicit = false;
+        _primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified;
+       
+        _diagnostics = new List<Diagnostic>();
         
         ImmutableArray<TypedConstant> args = _matchingAttribute.ConstructorArguments;
 
@@ -91,19 +104,26 @@ internal class BuildConfigurationFromAttributes
 
         return new(
             resultingConfiguration: new VogenConfiguration(
-                _underlyingType,
-                _invalidExceptionType,
-                _conversions,
-                _customizations,
-                _deserializationStrictness,
-                _debuggerAttributes,
-                _comparisonGeneration,
-                _stringComparers,
-                _toPrimitiveCasting,
-                _fromPrimitiveCasting,
-                _disableStackTraceGenerationInDebug,
-                _parsableForStrings,
-                _parsableForPrimitives),
+                UnderlyingType: _underlyingType,
+                ValidationExceptionType: _invalidExceptionType,
+                Conversions: _conversions,
+                Customizations: _customizations,
+                DeserializationStrictness: _deserializationStrictness,
+                DebuggerAttributes: _debuggerAttributes,
+                Comparison: _comparisonGeneration,
+                StringComparers: _stringComparers,
+                ToPrimitiveCasting: _toPrimitiveCasting,
+                FromPrimitiveCasting: _fromPrimitiveCasting,
+                DisableStackTraceRecordingInDebug: _disableStackTraceGenerationInDebug,
+                ParsableForStrings: _parsableForStrings,
+                ParsableForPrimitives: _parsableForPrimitives,
+                TryFromGeneration: _tryFromGeneration,
+                IsInitializedMethodGeneration: _isInitializedMethodGeneration,
+                SystemTextJsonConverterFactoryGeneration: _systemTextJsonConverterFactoryGeneration,
+                StaticAbstractsGeneration: _staticAbstractsGeneration,
+                OpenApiSchemaCustomizations: _openApiSchemaCustomizations,
+                ExplicitlySpecifyTypeInValueObject: _primitiveTypeMustBeExplicit,
+                PrimitiveEqualityGeneration: _primitiveEqualityGeneration),
             diagnostics: _diagnostics);
     }
 
@@ -175,7 +195,7 @@ internal class BuildConfigurationFromAttributes
     // ReSharper disable once CognitiveComplexity
     private void PopulateFromVogenDefaultsAttributeArgs(ImmutableArray<TypedConstant> argsExcludingUnderlyingType)
     {
-        if (argsExcludingUnderlyingType.Length > 10)
+        if (argsExcludingUnderlyingType.Length > 17)
         {
             throw new InvalidOperationException("Too many arguments for the attribute.");
         }
@@ -187,6 +207,41 @@ internal class BuildConfigurationFromAttributes
             if (v is null)
             {
                 continue;
+            }
+
+            if (i == 16)
+            {
+                _primitiveEqualityGeneration = (PrimitiveEqualityGeneration) v;
+            }
+            
+            if (i == 15)
+            {
+                _primitiveTypeMustBeExplicit = (bool) v;
+            }
+
+            if (i == 14)
+            {
+                _openApiSchemaCustomizations = (OpenApiSchemaCustomizations) v;
+            }
+
+            if (i == 13)
+            {
+                _staticAbstractsGeneration = (StaticAbstractsGeneration) v;
+            }
+
+            if (i == 12)
+            {
+                _systemTextJsonConverterFactoryGeneration = (SystemTextJsonConverterFactoryGeneration) v;
+            }
+
+            if (i == 11)
+            {
+                _isInitializedMethodGeneration = (IsInitializedMethodGeneration) v;
+            }
+
+            if (i == 10)
+            {
+                _tryFromGeneration = (TryFromGeneration) v;
             }
 
             if (i == 9)
@@ -206,12 +261,12 @@ internal class BuildConfigurationFromAttributes
 
             if (i == 6)
             {
-                _toPrimitiveCasting = (CastOperator) v;
+                _fromPrimitiveCasting = (CastOperator) v;
             }
 
             if (i == 5)
             {
-                _fromPrimitiveCasting = (CastOperator) v;
+                _toPrimitiveCasting = (CastOperator) v;
             }
 
             if (i == 4)
@@ -246,7 +301,7 @@ internal class BuildConfigurationFromAttributes
     // ReSharper disable once CognitiveComplexity
     private void PopulateFromValueObjectAttributeArgs(ImmutableArray<TypedConstant> args)
     {
-        if (args.Length > 11)
+        if (args.Length > 14)
         {
             throw new InvalidOperationException("Too many arguments for the attribute.");
         }
@@ -258,6 +313,21 @@ internal class BuildConfigurationFromAttributes
             if (v is null)
             {
                 continue;
+            }
+
+            if (i == 13)
+            {
+                _primitiveEqualityGeneration = (PrimitiveEqualityGeneration) v;
+            }
+
+            if (i == 12)
+            {
+                _isInitializedMethodGeneration = (IsInitializedMethodGeneration) v;
+            }
+
+            if (i == 11)
+            {
+                _tryFromGeneration = (TryFromGeneration) v;
             }
 
             if (i == 10)

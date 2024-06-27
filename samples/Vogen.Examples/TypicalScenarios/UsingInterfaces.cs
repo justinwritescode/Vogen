@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+// ReSharper disable AccessToStaticMemberViaDerivedType
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Vogen.Examples.TypicalScenarios.UsingInterfaces
 {
@@ -8,6 +11,7 @@ namespace Vogen.Examples.TypicalScenarios.UsingInterfaces
     /// Scenario: I want my IDs to have a common interface so that I can pass them to a method that
     /// just wants to know they are an ID.
     /// </summary>
+    [UsedImplicitly]
     internal class UsingInterfaces : IScenario
     {
         public Task Run()
@@ -16,7 +20,7 @@ namespace Vogen.Examples.TypicalScenarios.UsingInterfaces
             return Task.CompletedTask;
         }
 
-        void ProcessIds(params IHaveAnId<int>[] ids)
+        static void ProcessIds(params IHaveAnId<int>[] ids)
         {
             Console.WriteLine("IDs are " + string.Join(", ", ids.Select(i => i.Value)));
         }
@@ -38,7 +42,7 @@ namespace Vogen.Examples.TypicalScenarios.UsingInterfaces
     {
     }
     
-    // You could derive from this, but if you the type you're wrapping is a reference type,
+    // You could derive from this, but if the type you're wrapping is a reference type,
     // then be aware that there could be severe overhead of wrapping a reference type
     // as a value type. One of the  goals of Vogen is to not add too much overhead
     // (in terms of memory/speed) over using the primitive type itself.

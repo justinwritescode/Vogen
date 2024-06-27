@@ -1,8 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-
-using System;
-
-namespace Vogen.IntegrationTests.TestTypes.ClassVos
+﻿namespace Vogen.IntegrationTests.TestTypes.ClassVos
 {
     [ValueObject(conversions: Conversions.None, underlyingType: typeof(TimeOnly))]
     public partial class TimeOnlyVo { }
@@ -19,6 +15,7 @@ namespace Vogen.IntegrationTests.TestTypes.ClassVos
     [ValueObject(conversions: Conversions.SystemTextJson, underlyingType: typeof(TimeOnly))]
     public partial class SystemTextJsonTimeOnlyVo { }
 
+    
     [ValueObject(conversions: Conversions.NewtonsoftJson | Conversions.SystemTextJson, underlyingType: typeof(TimeOnly))]
     public partial class BothJsonTimeOnlyVo { }
 
@@ -31,5 +28,3 @@ namespace Vogen.IntegrationTests.TestTypes.ClassVos
     [ValueObject(conversions: Conversions.LinqToDbValueConverter, underlyingType: typeof(TimeOnly))]
     public partial class LinqToDbTimeOnlyVo { }
 }
-
-#endif

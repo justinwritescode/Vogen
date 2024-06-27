@@ -12,13 +12,18 @@ internal static class GenerateCodeForParse
     {
         if (item.ParsingInformation.UnderlyingIsAString)
         {
-            if (item.ParsableForStrings is ParsableForStrings.GenerateMethodsAndInterface or ParsableForStrings.GenerateMethods)
+            StringBuilder sb = new StringBuilder();
+            
+            bool configSaysGenerate = item.Config.ParsableForStrings is ParsableForStrings.GenerateMethodsAndInterface or ParsableForStrings.GenerateMethods;
+            if (configSaysGenerate)
             {
-                return BuildParseMethodForAString(item);
+                sb.Append(BuildParseWithFormatProviderMethodForAString(item));
             }
+
+            return sb.ToString();
         }
         
-        if (item.ParsableForPrimitives is not (ParsableForPrimitives.HoistMethods or ParsableForPrimitives.HoistMethodsAndInterfaces))
+        if (item.Config.ParsableForPrimitives is not (ParsableForPrimitives.HoistMethods or ParsableForPrimitives.HoistMethodsAndInterfaces))
         {
             return string.Empty;
         }
@@ -63,9 +68,9 @@ internal static class GenerateCodeForParse
         }
     }
 
-    private static string BuildParseMethodForAString(VoWorkItem item)
+    private static string BuildParseWithFormatProviderMethodForAString(VoWorkItem item)
     {
-        var matches = GetUserSuppliedParseMethodMatches(item);
+        var matches = GetUserSuppliedParseWithFormatProviderMethodMatches(item);
         
         if (matches == UserSuppliedParseMethods.ExactMatch)
         {
@@ -80,15 +85,15 @@ internal static class GenerateCodeForParse
     /// <summary>
     /// </summary>
     /// <returns>
-    /// The value created via the <see cref=""From""/> method.
+    /// The value created via the <see cref=""From(global::System.String)""/> method.
     /// </returns>
-    /// <exception cref=""ValueObjectValidationException"">Thrown when the value can be parsed, but is not valid.</exception>
+    /// <exception cref=""{item.ValidationExceptionFullName}"">Thrown when the value can be parsed, but is not valid.</exception>
     {methodDecl}(global::System.String s, global::System.IFormatProvider provider) {{
         return From(s);
     }}";
     }
-    
-    private static UserSuppliedParseMethods GetUserSuppliedParseMethodMatches(VoWorkItem item)
+
+    private static UserSuppliedParseMethods GetUserSuppliedParseWithFormatProviderMethodMatches(VoWorkItem item)
     {
         var allStaticParseMethods = item.UserProvidedOverloads.ParseMethods.Where(
             m => m.IsStatic &&
@@ -120,16 +125,16 @@ internal static class GenerateCodeForParse
         var inheritDocRef = methodSymbol.ToString()!
             .Replace("<", "{")
             .Replace(">", "}");
-            
+
         var ret =
             @$"
     /// <inheritdoc cref=""{inheritDocRef}""/>
     /// <summary>
     /// </summary>
     /// <returns>
-    /// The value created via the <see cref=""From""/> method.
+    /// The value created by calling the Parse method on the primitive.
     /// </returns>
-    /// <exception cref=""ValueObjectValidationException"">Thrown when the value can be parsed, but is not valid.</exception>
+    /// <exception cref=""{item.ValidationExceptionFullName}"">Thrown when the value can be parsed, but is not valid.</exception>
     public {staticOrNot}{item.VoTypeName} Parse({parameters}) {{
         var r = {item.UnderlyingTypeFullName}.Parse({parameterNames});
         return From(r);

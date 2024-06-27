@@ -9,6 +9,10 @@ using System;
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
 public class VogenDefaultsAttribute : Attribute
 {
+    // ** NOTE: The default values here should be 'Unspecified' if there is such an option.
+    // The default values are resolved when merging attributes, if either are unspecified,
+    // then the respective value in `VogenConfiguration.DefaultInstance` is used.
+
     /// <summary>
     /// Creates a new instance of a type that represents the default
     /// values used for value object generation.
@@ -29,6 +33,13 @@ public class VogenDefaultsAttribute : Attribute
     /// This stack trace is heap based which might be unwanted if your Value Object is stack based.</param>
     /// <param name="parsableForStrings">Specifies the functionality around parsing (IParsable etc.)</param>
     /// <param name="parsableForPrimitives">Specifies the functionality around parsing (IParsable etc.)</param>
+    /// <param name="tryFromGeneration">Controls what is generated for the TryFrom methods.</param>
+    /// <param name="isInitializedMethodGeneration">Controls whether the IsInitialized method is generated.</param>
+    /// <param name="systemTextJsonConverterFactoryGeneration">Controls the generation of the type factory for System.Text.Json.</param>
+    /// <param name="staticAbstractsGeneration">Controls the generation of static abstract interfaces.</param>
+    /// <param name="openApiSchemaCustomizations">Controls the generation of a Swashbuckle schema filter for OpenAPI.</param>
+    /// <param name="explicitlySpecifyTypeInValueObject">Every ValueObject attribute must explicitly specify the type of the primitive.</param>
+    /// <param name="primitiveEqualityGeneration">Whether or not to generate primitive comparison operators.</param>
     public VogenDefaultsAttribute(
         Type? underlyingType = null,
         Conversions conversions = Conversions.Default,
@@ -40,8 +51,15 @@ public class VogenDefaultsAttribute : Attribute
         CastOperator fromPrimitiveCasting = CastOperator.Explicit,
         bool disableStackTraceRecordingInDebug = false,
         ParsableForStrings parsableForStrings = ParsableForStrings.GenerateMethodsAndInterface,
-        ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.HoistMethodsAndInterfaces
-        )
+        ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.HoistMethodsAndInterfaces,
+        TryFromGeneration tryFromGeneration = TryFromGeneration.Unspecified,
+        IsInitializedMethodGeneration isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified,
+        SystemTextJsonConverterFactoryGeneration systemTextJsonConverterFactoryGeneration =
+            SystemTextJsonConverterFactoryGeneration.Unspecified,
+        StaticAbstractsGeneration staticAbstractsGeneration = StaticAbstractsGeneration.Unspecified,
+        OpenApiSchemaCustomizations openApiSchemaCustomizations = OpenApiSchemaCustomizations.Unspecified,
+        bool explicitlySpecifyTypeInValueObject = false,
+        PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified)
     {
     }
 }

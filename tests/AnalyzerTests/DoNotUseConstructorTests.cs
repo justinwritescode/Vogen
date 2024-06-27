@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.CodeAnalysis;
@@ -12,14 +13,18 @@ public class DoNotUseConstructorTests
     public class PrimaryConstructorTests
     {
         [Theory]
+        [InlineData("partial class")]
+        [InlineData("partial struct")]
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void parameters_disallowed(string type)
+        public async Task parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
 namespace Whatever;
+
+#pragma warning disable CS9113 // parameter is unread
 
 [ValueObject]
 public {type} CustomerId(int SomethingElse)
@@ -27,7 +32,7 @@ public {type} CustomerId(int SomethingElse)
 }}
 ";
 
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();
@@ -48,7 +53,7 @@ public {type} CustomerId(int SomethingElse)
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void multiple_parameters_disallowed(string type)
+        public async Task multiple_parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
@@ -60,7 +65,7 @@ public {type} CustomerId(int SomethingElse, string Name, int Age)
 }}
 ";
 
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();
@@ -81,7 +86,7 @@ public {type} CustomerId(int SomethingElse, string Name, int Age)
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void empty_parameters_disallowed(string type)
+        public async Task empty_parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
@@ -93,7 +98,7 @@ public {type} CustomerId()
 }}
 ";
 
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();
@@ -119,7 +124,7 @@ public {type} CustomerId()
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void parameters_disallowed(string type)
+        public async Task parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
@@ -132,7 +137,7 @@ public {type} CustomerId
 }}
 ";
 
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();
@@ -156,7 +161,7 @@ public {type} CustomerId
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void multiple_parameters_disallowed(string type)
+        public async Task multiple_parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
@@ -169,7 +174,7 @@ public {type} CustomerId
 }}
 ";
 
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();
@@ -193,7 +198,7 @@ public {type} CustomerId
         [InlineData("partial record class")]
         [InlineData("partial record struct")]
         [InlineData("readonly partial record struct")]
-        public void empty_parameters_disallowed(string type)
+        public async Task empty_parameters_disallowed(string type)
         {
             var source = $@"using Vogen;
 
@@ -205,7 +210,7 @@ public {type} CustomerId
     public CustomerId() {{ }}
 }}
 ";
-            new TestRunner<ValueObjectGenerator>()
+            await new TestRunner<ValueObjectGenerator>()
                 .WithSource(source)
                 .ValidateWith(Validate)
                 .RunOnAllFrameworks();

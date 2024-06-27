@@ -1,18 +1,19 @@
 using System.Text;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Vogen;
 
 public static class GenerateCastingOperators
 {
-    public static string Generate(VoWorkItem item, TypeDeclarationSyntax tds)
+    public static string GenerateImplementations(VoWorkItem item, TypeDeclarationSyntax tds)
     {
         var className = tds.Identifier;
         var itemUnderlyingType = item.UnderlyingTypeFullName;
 
         StringBuilder sb = new();
 
-        if (item.FromPrimitiveCastOperator == CastOperator.Explicit)
+        if (item.Config.FromPrimitiveCasting == CastOperator.Explicit)
         {
             sb.AppendLine(
                 $$"""
@@ -20,7 +21,8 @@ public static class GenerateCastingOperators
                   """);
         }
 
-        if (item.ToPrimitiveCastOperator == CastOperator.Explicit)
+        // Generate the call to the Value property so that it throws if uninitialized.
+        if (item.Config.ToPrimitiveCasting == CastOperator.Explicit)
         {
             sb.AppendLine(
                 $$"""
@@ -28,7 +30,8 @@ public static class GenerateCastingOperators
                   """);
         }
 
-        if (item.ToPrimitiveCastOperator == CastOperator.Implicit)
+        // Generate the call to the _value field so that it doesn't throw if uninitialized.
+        if (item.Config.ToPrimitiveCasting == CastOperator.Implicit)
         {
             sb.AppendLine(
                 $$"""
@@ -36,7 +39,7 @@ public static class GenerateCastingOperators
                   """);
         }
 
-        if (item.FromPrimitiveCastOperator == CastOperator.Implicit)
+        if (item.Config.FromPrimitiveCasting == CastOperator.Implicit)
         {
             sb.AppendLine(
                 $$"""

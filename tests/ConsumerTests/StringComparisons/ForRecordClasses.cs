@@ -1,5 +1,4 @@
-﻿using ConsumerTests.StringComparisons;
-using FluentAssertions.Execution;
+﻿using FluentAssertions.Execution;
 
 namespace ConsumerTests.StringComparisons;
 
@@ -38,7 +37,6 @@ public class ForRecordClasses
         (left == right).Should().BeFalse();
     }
 
-#if NET7_0_OR_GREATER
     [Fact]
     public void OrdinalIgnoreCase_Generic()
     {
@@ -56,7 +54,6 @@ public class ForRecordClasses
         left.Should().NotBe(right);
         (left == right).Should().BeFalse();
     }
-#endif
 
     [Fact]
     public void OrdinalIgnoreCase_in_a_dictionary()

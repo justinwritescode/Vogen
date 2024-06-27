@@ -2,113 +2,142 @@
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Vogen
+namespace Vogen;
+
+[Generator]
+public class ValueObjectGenerator : IIncrementalGenerator
 {
-    [Generator]
-    public class ValueObjectGenerator : IIncrementalGenerator
+    
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        public void Initialize(IncrementalGeneratorInitializationContext context)
-        {
-            //todo: use ForAttributeWithMetadataName instead: https://www.thinktecture.com/net/roslyn-source-generators-high-level-api-forattributewithmetadataname/
+        Found found = GetTargets(context);
+
+        IncrementalValueProvider<ImmutableArray<VoTarget>> collectedVos = found.Vos.Collect();
             
-            IncrementalValueProvider<(ImmutableArray<VoTarget> Left, ImmutableArray<AttributeSyntax> Right)> targets = GetTargets(context);
-
-            IncrementalValueProvider<(Compilation Left, (ImmutableArray<VoTarget> Left, ImmutableArray<AttributeSyntax> Right) Right)> compilationAndValues
-                = context.CompilationProvider.Combine(targets);
-
-            context.RegisterSourceOutput(compilationAndValues,
-                static (spc, source) => Execute(
-                    source.Left, 
-                    source.Right.Left, 
-                    source.Right.Right,
-                    spc));
-        }
-
-        private static IncrementalValueProvider<(ImmutableArray<VoTarget> Left, ImmutableArray<AttributeSyntax> Right)> GetTargets(
-            IncrementalGeneratorInitializationContext context)
-        {
-            IncrementalValuesProvider<VoTarget> voFilter = context.SyntaxProvider.CreateSyntaxProvider(
-                    predicate: static (s, _) => VoFilter.IsTarget(s),
-                    transform: static (ctx, _) => VoFilter.TryGetTarget(ctx))
-                .Where(static m => m is not null)!;
-
-            IncrementalValuesProvider<AttributeSyntax> globalConfigFilter = context.SyntaxProvider.CreateSyntaxProvider(
-                    predicate: static (s, _) => IsTarget(s),
-                    transform: static (ctx, _) => ManageAttributes.TryGetAssemblyLevelDefaultsAttribute(ctx))
-                .Where(static m => m is not null)!;
-
-            IncrementalValueProvider<(ImmutableArray<VoTarget> Left, ImmutableArray<AttributeSyntax> Right)> targetsAndDefaultAttributes
-                = voFilter.Collect().Combine(globalConfigFilter.Collect());
-
-            return targetsAndDefaultAttributes;
-        }
-
-        static void Execute(
-            Compilation compilation, 
-            ImmutableArray<VoTarget> typeDeclarations,
-            ImmutableArray<AttributeSyntax> globalConfigAttributes,
-            SourceProductionContext context)
-        {
-            if (typeDeclarations.IsDefaultOrEmpty)
-            {
-                return;
-            }
+        var targetsAndConfig = collectedVos.Combine(found.GlobalConfig.Collect());
             
-            // if there are some, get the default global config
-            var buildResult =
-                ManageAttributes.GetDefaultConfigFromGlobalAttribute(globalConfigAttributes, compilation);
+        var targetsConfigAndEfCoreSpecs = targetsAndConfig.Combine(found.EfCoreConverterSpecs.Collect());
+
+        var compilationAndValues = context.CompilationProvider.Combine(targetsConfigAndEfCoreSpecs);
             
-            foreach (var diagnostic in buildResult.Diagnostics)
-            {
-                context.ReportDiagnostic(diagnostic);
-            }
+        context.RegisterSourceOutput(compilationAndValues,
+            static (spc, source) => Execute(
+                source.Left, 
+                source.Right.Left.Left, 
+                source.Right.Left.Right, 
+                source.Right.Right,
+                spc));
+    }
 
-            VogenConfiguration? globalConfig = buildResult.ResultingConfiguration;
+    private static Found GetTargets(IncrementalGeneratorInitializationContext context)
+    {
+        IncrementalValuesProvider<VoTarget> targets = context.SyntaxProvider.CreateSyntaxProvider(
+                predicate: static (node, _) => VoFilter.IsTarget(node),
+                transform: static (ctx, _) => VoFilter.TryGetTarget(ctx))
+            .Where(static m => m is not null)!;
 
-            // get all of the ValueObject types found.
-            List<VoWorkItem> workItems = GetWorkItems(typeDeclarations, context, globalConfig, compilation).ToList();
+        IncrementalValuesProvider<VogenConfigurationBuildResult> globalConfig = context.SyntaxProvider.ForAttributeWithMetadataName(
+                "Vogen.VogenDefaultsAttribute",
+                predicate: (node, _) => node is CompilationUnitSyntax,
+                transform: (ctx, _) => ManageAttributes.GetDefaultConfigFromGlobalAttribute(ctx))
+            .Where(static m => m is not null)!;
 
-            if (workItems.Count > 0)
-            {
-                foreach (var eachWorkItem in workItems)
-                {
-                    WriteWorkItems.WriteVo(eachWorkItem, context);
-                }
-            }
-        }
+        IncrementalValuesProvider<EfCoreConverterMarkerClassResults> efCoreConverterSpecs = context.SyntaxProvider.ForAttributeWithMetadataName(
+                "Vogen.EfCoreConverterAttribute`1",
+                predicate: (node, _) => node is ClassDeclarationSyntax,
+                transform: (ctx, _) => ManageAttributes.GetEfCoreConverterSpecFromAttribute(ctx))
+            .Where(static m => m is not null)!;
 
-        private static IEnumerable<VoWorkItem> GetWorkItems(ImmutableArray<VoTarget> targets,
-            SourceProductionContext context,
-            VogenConfiguration? globalConfig,
-            Compilation compilation)
+        return new Found(targets, globalConfig, efCoreConverterSpecs);
+    }
+
+    record struct Found(
+        IncrementalValuesProvider<VoTarget> Vos,
+        IncrementalValuesProvider<VogenConfigurationBuildResult> GlobalConfig,
+        IncrementalValuesProvider<EfCoreConverterMarkerClassResults> EfCoreConverterSpecs);
+    
+    private static void Execute(
+        Compilation compilation, 
+        ImmutableArray<VoTarget> targets,
+        ImmutableArray<VogenConfigurationBuildResult> globalConfigBuildResult,
+        ImmutableArray<EfCoreConverterMarkerClassResults> efCoreConverterSpecs,
+        SourceProductionContext spc)
+    {
+        using var internalDiags = InternalDiagnostics.TryCreateIfSpecialClassIsPresent(compilation, spc);
+        internalDiags.IncrementGeneratedCount();
+
+        internalDiags.RecordTargets(targets);
+
+        var efSpecErrors = efCoreConverterSpecs.SelectMany(x => x.Diagnostics);
+        
+        foreach (var diagnostic in efSpecErrors)
         {
-            if (targets.IsDefaultOrEmpty)
-            {
-                yield break;
-            }
+            spc.ReportDiagnostic(diagnostic);
+        }
+        
+        // if there are some, get the default global config
+        VogenConfigurationBuildResult buildResult = globalConfigBuildResult.IsDefaultOrEmpty
+            ? VogenConfigurationBuildResult.Null
+            : globalConfigBuildResult.ElementAt(0);
 
-            foreach (var eachTarget in targets)
-            {
-                if (eachTarget is null)
-                {
-                    continue;
-                }
+        foreach (var diagnostic in buildResult.Diagnostics)
+        {
+            spc.ReportDiagnostic(diagnostic);
+        }
+            
+        VogenConfiguration? globalConfig = buildResult.ResultingConfiguration;
+            
+        internalDiags.RecordGlobalConfig(globalConfig);
+
+        // get all the ValueObject types found.
+        List<VoWorkItem> workItems = GetWorkItems(targets, spc, globalConfig, compilation).ToList();
+            
+        WriteOpenApiSchemaCustomizationCode.WriteIfNeeded(globalConfig, spc, compilation, workItems);
+
+        WriteEfCoreSpecs.WriteIfNeeded(spc, compilation, efCoreConverterSpecs);
+
+        if (workItems.Count > 0)
+        {
+            var mergedConfig = CombineConfigurations.CombineAndResolveAnyGlobalConfig(globalConfig);
+
+            internalDiags.RecordResolvedGlobalConfig(mergedConfig);
                 
-                var ret = BuildWorkItems.TryBuild(eachTarget, context, globalConfig, compilation);
-                
-                if (ret is not null)
-                {
-                    yield return ret;
-                }
+            WriteStaticAbstracts.WriteInterfacesAndMethodsIfNeeded(mergedConfig, spc, compilation);
+
+            WriteSystemTextJsonConverterFactories.WriteIfNeeded(mergedConfig, workItems, spc, compilation);
+
+            foreach (var eachWorkItem in workItems)
+            {
+                WriteWorkItems.WriteVo(eachWorkItem, spc);
             }
         }
+    }
+        
+    private static IEnumerable<VoWorkItem> GetWorkItems(ImmutableArray<VoTarget> targets,
+        SourceProductionContext context,
+        VogenConfiguration? globalConfig,
+        Compilation compilation)
+    {
+        if (targets.IsDefaultOrEmpty)
+        {
+            yield break;
+        }
 
-        private static bool IsTarget(SyntaxNode node) =>
-            node is AttributeListSyntax attributeList
-            && attributeList.Target is not null
-            && attributeList.Target.Identifier.IsKind(SyntaxKind.AssemblyKeyword);
+        foreach (var eachTarget in targets)
+        {
+            if (eachTarget is null)
+            {
+                continue;
+            }
+                
+            var ret = BuildWorkItems.TryBuild(eachTarget, context, globalConfig, compilation);
+                
+            if (ret is not null)
+            {
+                yield return ret;
+            }
+        }
     }
 }

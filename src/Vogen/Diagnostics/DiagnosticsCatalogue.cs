@@ -84,7 +84,7 @@ internal static class DiagnosticsCatalogue
         "{0} must accept one parameter of the same type as the underlying type");
 
     private static readonly DiagnosticDescriptor _validationMustBeStatic = CreateDescriptor(
-        RuleIdentifiers.ValidationMustBeStatic,
+        RuleIdentifiers.ValidateMethodMustBeStatic,
         "Validation must be static",
         "{0} must be static");
 
@@ -117,6 +117,16 @@ internal static class DiagnosticsCatalogue
         RuleIdentifiers.CustomExceptionMustHaveValidConstructor,
         "Invalid custom exception",
         "{0} must have at least 1 public constructor with 1 parameter of type System.String");
+
+    private static readonly DiagnosticDescriptor _efCoreTargetMustExplicitlySpecifyItsPrimitive = CreateDescriptor(
+        RuleIdentifiers.EfCoreTargetMustExplicitlySpecifyItsPrimitive,
+        "Value objects must explicitly specify the primitive type",
+        "Type '{0}' must explicitly specify the primitive type that it wraps in order for its EFCore converter to be generated");
+
+    private static readonly DiagnosticDescriptor _efCoreTargetMustBeAVo = CreateDescriptor(
+        RuleIdentifiers.EfCoreTargetMustBeAVo,
+        "EFCore target must be a value object",
+        "Type '{0}' specifies a target value object of {1} but it is not a value object");
 
     public static Diagnostic TypeCannotBeNested(INamedTypeSymbol typeModel, INamedTypeSymbol container) => 
         Create(_typeCannotBeNested, typeModel.Locations, typeModel.Name, container.Name);
@@ -180,6 +190,12 @@ internal static class DiagnosticsCatalogue
 
     public static Diagnostic CustomExceptionMustHaveValidConstructor(INamedTypeSymbol symbol) => 
         Create(_customExceptionMustHaveValidConstructor, symbol.Locations, symbol.Name);
+
+    public static Diagnostic VoMustExplicitlySpecifyPrimitiveToBeAnEfCoreTarget(INamedTypeSymbol symbol) => 
+        Create(_efCoreTargetMustExplicitlySpecifyItsPrimitive, symbol.Locations, symbol.Name);
+
+    public static Diagnostic EfCoreTargetMustBeAVo(INamedTypeSymbol markerClassSymbol, INamedTypeSymbol voSymbol) => 
+        Create(_efCoreTargetMustBeAVo, voSymbol.Locations, markerClassSymbol.Name, voSymbol.Name);
 
     private static DiagnosticDescriptor CreateDescriptor(string code, string title, string messageFormat, DiagnosticSeverity severity = DiagnosticSeverity.Error)
     {

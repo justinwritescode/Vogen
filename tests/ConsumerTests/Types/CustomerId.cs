@@ -1,4 +1,4 @@
 ﻿namespace Vogen.Tests.Types;
 
-[ValueObject(typeof(int))]
-public partial struct CustomerId { }
+[ValueObject<int>]
+public readonly partial struct CustomerId;

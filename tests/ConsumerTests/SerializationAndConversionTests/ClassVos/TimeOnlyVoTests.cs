@@ -1,17 +1,11 @@
-﻿#if NET6_0_OR_GREATER
-
-#nullable disable
-using System;
-using System.Collections.Generic;
+﻿#nullable disable
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using NewtonsoftJsonSerializer = Newtonsoft.Json.JsonConvert;
 using SystemTextJsonSerializer = System.Text.Json.JsonSerializer;
 using Vogen.IntegrationTests.TestTypes.ClassVos;
@@ -19,6 +13,7 @@ using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.SQLite;
 using LinqToDB.Mapping;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable RedundantCast
 // ReSharper disable ArrangeMethodOrOperatorBody
@@ -61,7 +56,6 @@ namespace Vogen.IntegrationTests.SerializationAndConversionTests.ClassVos
             TimeOnlyVo.From(_time1).Equals(AnotherTimeOnlyVo.From(_time1)).Should().BeFalse();
         }
 
-#if NET7_0_OR_GREATER
         [Fact]
         public void CanSerializeToString_WithNewtonsoftJsonProvider()
         {
@@ -83,7 +77,7 @@ namespace Vogen.IntegrationTests.SerializationAndConversionTests.ClassVos
 
             serializedVo.Equals(serializedString).Should().BeTrue();
         }
-
+        
         [Fact]
         public void CanDeserializeFromString_WithNewtonsoftJsonProvider()
         {
@@ -160,7 +154,6 @@ namespace Vogen.IntegrationTests.SerializationAndConversionTests.ClassVos
             newtonsoft.Should().Be(expected);
             systemText.Should().Be(expected);
         }
-#endif
         
         [Fact]
         public void WhenEfCoreValueConverterUsesValueConverter()
@@ -279,5 +272,3 @@ namespace Vogen.IntegrationTests.SerializationAndConversionTests.ClassVos
         }
     }
 }
-
-#endif

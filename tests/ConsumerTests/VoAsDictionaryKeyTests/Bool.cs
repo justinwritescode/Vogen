@@ -1,10 +1,6 @@
-﻿#if NET6_0_OR_GREATER
-#nullable disable
+﻿#nullable disable
 
-using System.Collections.Generic;
 using System.Text.Json;
-using FluentAssertions;
-using Vogen;
 
 namespace ConsumerTests.VoAsDictionaryKeyTests;
 
@@ -37,5 +33,3 @@ public class Bool
         d2[EmployeeTypeBool.Operator].Should().Contain(new Employee("Dave Angel", 42));
     }
 }
-
-#endif

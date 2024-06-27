@@ -9,34 +9,37 @@ namespace Vogen;
 internal static class VoFilter
 {
     /// <summary>
-    /// This is stage 1 in the pipeline - the 'quick filter'.  We find out is it a type declaration and does it have any attributes? - don't allocate anything
-    /// here as this is called a **lot** (every time the editor is changed, i.e. key-presses).
+    /// Tries to get any `ValueObject` attributes specified on the provided symbol.
+    /// It might return more than one, because the user might have typed more than one.
+    /// Even though having more than one is not valid, it's still possible for it to exist,
+    /// so we return what is found and let the caller decide what to do.
     /// </summary>
-    /// <param name="syntaxNode"></param>
+    /// <param name="voSymbolInformation"></param>
     /// <returns></returns>
-    public static bool IsTarget(SyntaxNode syntaxNode) =>
-        syntaxNode is TypeDeclarationSyntax {AttributeLists.Count: > 0};
-
-    // We return all value object attributes here. There can only be one, but we report
-    // it later with the location from the syntax.
     public static IEnumerable<AttributeData> TryGetValueObjectAttributes(INamedTypeSymbol voSymbolInformation)
     {
         var attrs = voSymbolInformation.GetAttributes();
 
         return attrs.Where(
-                a => a.AttributeClass?.FullName() == "Vogen.ValueObjectAttribute"
-                     || a.AttributeClass?.BaseType?.FullName() == "Vogen.ValueObjectAttribute"
-                     || a.AttributeClass?.BaseType?.BaseType?.FullName() == "Vogen.ValueObjectAttribute");
+            a => a.AttributeClass?.FullName() == "Vogen.ValueObjectAttribute"
+                 || a.AttributeClass?.BaseType?.FullName() == "Vogen.ValueObjectAttribute"
+                 || a.AttributeClass?.BaseType?.BaseType?.FullName() == "Vogen.ValueObjectAttribute");
     }
 
-    // This is stage 2 in the pipeline - we filter down to just 1 target
+    /// <summary>
+    /// Given a type declaration (via the context), it gets the semantic model,
+    /// then gets the type declaration, then tries to get any value object
+    /// attributes.
+    /// </summary>
+    /// <param name="context">The context containing the node.</param>
+    /// <returns>The target, otherwise null.</returns>
     public static VoTarget? TryGetTarget(GeneratorSyntaxContext context)
     {
         var voSyntaxInformation = (TypeDeclarationSyntax) context.Node;
 
         var semanticModel = context.SemanticModel;
 
-        var declaredSymbol = semanticModel.GetDeclaredSymbol(context.Node)!;
+        ISymbol declaredSymbol = semanticModel.GetDeclaredSymbol(context.Node)!;
         
         var voSymbolInformation = (INamedTypeSymbol) declaredSymbol;
 
@@ -57,6 +60,9 @@ internal static class VoFilter
         return null;
     }
 
+    public static bool IsTarget(SyntaxNode syntaxNode) => 
+        syntaxNode is TypeDeclarationSyntax { AttributeLists.Count: > 0 };
+
     public static bool IsTarget(INamedTypeSymbol? voClass) => 
-        voClass is not null && TryGetValueObjectAttributes(voClass).Any();
+        voClass is not null && TryGetValueObjectAttributes(voClass).Any();    
 }

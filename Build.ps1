@@ -73,7 +73,7 @@ exec { & dotnet test tests/Vogen.Tests/Vogen.Tests.csproj -c Release --no-build 
 # it causes conflicts caused by the difference in runtime; VS uses netstandard2.0 to load and run the analyzers, but the 
 # test project uses a variety of runtimes. So, it uses NuGet to reference the Vogen analyzer. To do this, this script first 
 # builds and packs Vogen using a ridiculously high version number and then restores the tests NuGet dependencies to use that
-# package. This will allow you run and debug debug these tests in VS, but to use any new code changes in the analyzer, you 
+# package. This will allow you run and debug these tests in VS, but to use any new code changes in the analyzer, you 
 # need to rerun this script to force a refresh of the package. 
 
 WriteStage("Building NuGet for local version of Vogen that will be used to run end to end tests and samples...")
@@ -86,7 +86,8 @@ $version = Get999VersionWithUniquePatch
 # **NOTE** - we don't want these 999.9.9.x packages ending up in %userprofile%\.nuget\packages because it'll polute it.
 
 exec { & dotnet restore Vogen.sln --packages $localPackages --no-cache --verbosity $verbosity }
-exec { & dotnet pack ./src/Vogen -c Debug -o:$localPackages /p:ForceVersion=$version --include-symbols --version-suffix:dev --no-restore --verbosity $verbosity }
+exec { & dotnet build Vogen.sln -c Debug --no-restore --verbosity $verbosity}
+exec { & dotnet pack ./src/Vogen.Pack.csproj -c Debug -o:$localPackages /p:ForceVersion=$version --include-symbols --version-suffix:dev --no-restore --verbosity $verbosity }
 
 WriteStage("Cleaning and building consumers (tests and samples)")
 
@@ -98,11 +99,17 @@ exec { & dotnet clean Consumers.sln -c Release --verbosity $verbosity}
 exec { & dotnet restore Consumers.sln -p UseLocallyBuiltPackage=true --force --no-cache --packages $localPackages --configfile ./nuget.private.config --verbosity $verbosity }
 
 exec { & dotnet build Consumers.sln -c Debug --no-restore --verbosity $verbosity }
+exec { & dotnet build Consumers.sln -c Release --no-restore --verbosity $verbosity }
 
-WriteStage("Running end to end tests with the local version of the NuGet package:" +$version)
-
+WriteStage("Running consumer tests in debug with the local version of the NuGet package:" +$version)
 exec { & dotnet test ./tests/ConsumerTests -c Debug --no-build --no-restore --verbosity $verbosity }
 
+WriteStage("Re-running tests in release with the local version of the NuGet package:" +$version)
+exec { & dotnet test ./tests/ConsumerTests -c Release --no-build --no-restore --verbosity $verbosity }
+
+WriteStage("Re-running tests in release with no validation with the local version of the NuGet package:" +$version)
+exec { & dotnet build Consumers.sln -c Release -p:DefineConstants="VOGEN_NO_VALIDATION" --no-restore --verbosity $verbosity }
+exec { & dotnet test ./tests/ConsumerTests -c Release --no-build --no-restore --verbosity $verbosity }
 
 WriteStage("Building samples using the local version of the NuGet package...")
 
@@ -113,7 +120,7 @@ exec { & dotnet run --project samples/Vogen.Examples/Vogen.Examples.csproj -c De
 WriteStage("Finally, packing the release version into " + $artifacts)
 
 
-exec { & dotnet pack src/Vogen -c Release -o $artifacts --no-build --verbosity $verbosity }
+exec { & dotnet pack src/Vogen.Pack.csproj -c Release -o $artifacts --no-build --verbosity $verbosity }
 
 WriteStage("Done! Package generated at " + $artifacts)
 

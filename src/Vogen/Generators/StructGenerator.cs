@@ -19,16 +19,18 @@ using Vogen;
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{Util.GenerateYourAssemblyName()}"", ""{Util.GenerateYourAssemblyVersion()}"")]
     {Util.GenerateAnyConversionAttributes(tds, item)}
     {DebugGeneration.GenerateDebugAttributes(item, structName, itemUnderlyingType)}
-    { Util.GenerateModifiersFor(tds)} struct {structName} : global::System.IEquatable<{structName}>, global::System.IEquatable<{itemUnderlyingType}>{GenerateComparableCode.GenerateIComparableHeaderIfNeeded(", ", item, tds)}{GenerateCodeForIParsableInterfaceDeclarations.GenerateIfNeeded(", ", item, tds)}
+    { Util.GenerateModifiersFor(tds)} struct {structName} : global::System.IEquatable<{structName}>{GenerateEqualsMethodsAndOperators.GenerateInterfaceIfNeeded(", ", itemUnderlyingType, item)}{GenerateComparableCode.GenerateIComparableHeaderIfNeeded(", ", item, tds)}{GenerateCodeForIParsableInterfaceDeclarations.GenerateIfNeeded(", ", item, tds)}{WriteStaticAbstracts.WriteHeaderIfNeeded(", ", item, tds)}
     {{
 {DebugGeneration.GenerateStackTraceFieldIfNeeded(item)}
 
+#if !VOGEN_NO_VALIDATION
         private readonly global::System.Boolean _isInitialized;
+#endif
         
         private readonly {itemUnderlyingType} _value;
 
         /// <summary>
-        /// Gets the underlying <see cref=""{itemUnderlyingType}"" /> value if set, otherwise a <see cref=""{nameof(ValueObjectValidationException)}"" /> is thrown.
+        /// Gets the underlying <see cref=""{itemUnderlyingType}"" /> value if set, otherwise a <see cref=""{item.ValidationExceptionFullName}"" /> is thrown.
         /// </summary>
         public readonly {itemUnderlyingType} Value
         {{
@@ -40,6 +42,7 @@ using Vogen;
             }}
         }}
 
+{GenerateStaticConstructor.GenerateIfNeeded(item)}
         [global::System.Diagnostics.DebuggerStepThroughAttribute]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
         public {structName}()
@@ -48,7 +51,9 @@ using Vogen;
             {DebugGeneration.SetStackTraceIfNeeded(item)}
 #endif
 
+#if !VOGEN_NO_VALIDATION
             _isInitialized = false;
+#endif
             _value = default;
         }}
 
@@ -56,7 +61,9 @@ using Vogen;
         private {structName}({itemUnderlyingType} value) 
         {{
             _value = value;
+#if !VOGEN_NO_VALIDATION
             _isInitialized = true;
+#endif
         }}
 
         /// <summary>
@@ -68,18 +75,23 @@ using Vogen;
         {{
             {Util.GenerateCallToNormalizeMethodIfNeeded(item)}
 
-            {Util.GenerateCallToValidation(item)}
+            {Util.GenerateCallToValidationAndThrowIfRequired(item)}
 
             {structName} instance = new {structName}(value);
 
             return instance;
         }}
-{GenerateEqualsAndHashCodes.GenerateStringComparersIfNeeded(item, tds)}        
 
-{GenerateCastingOperators.Generate(item,tds)}
+        {GenerateCodeForTryFrom.GenerateForAStruct(item, structName, itemUnderlyingType)}
+
+{Util.GenerateIsInitializedMethod(true, item)}
+
+{GenerateStringComparers.GenerateIfNeeded(item, tds)}        
+
+{GenerateCastingOperators.GenerateImplementations(item,tds)}{Util.GenerateGuidFactoryMethodIfNeeded(item, tds)}
         // only called internally when something has been deserialized into
         // its primitive type.
-        private static {structName} Deserialize({itemUnderlyingType} value)
+        private static {structName} __Deserialize({itemUnderlyingType} value)
         {{
             {Util.GenerateCallToNormalizeMethodIfNeeded(item)}
 
@@ -87,28 +99,23 @@ using Vogen;
 
             return new {structName}(value);
         }}
-        {GenerateEqualsAndHashCodes.GenerateEqualsForAStruct(item, tds)}
+        {GenerateEqualsMethodsAndOperators.GenerateEqualsMethodsForAStruct(item, tds)}
 
         public static global::System.Boolean operator ==({structName} left, {structName} right) => Equals(left, right);
         public static global::System.Boolean operator !=({structName} left, {structName} right) => !(left == right);
-
-        public static global::System.Boolean operator ==({structName} left, {itemUnderlyingType} right) => Equals(left.Value, right);
-        public static global::System.Boolean operator !=({structName} left, {itemUnderlyingType} right) => !Equals(left.Value, right);
-
-        public static global::System.Boolean operator ==({itemUnderlyingType} left, {structName} right) => Equals(left, right.Value);
-        public static global::System.Boolean operator !=({itemUnderlyingType} left, {structName} right) => !Equals(left, right.Value);
+{GenerateEqualsMethodsAndOperators.GenerateEqualsOperatorsForPrimitivesIfNeeded(itemUnderlyingType, structName, item)}
 
         {GenerateComparableCode.GenerateIComparableImplementationIfNeeded(item, tds)}
 
         {GenerateCodeForTryParse.GenerateAnyHoistedTryParseMethods(item)}{GenerateCodeForParse.GenerateAnyHoistedParseMethods(item)}
         
-        {GenerateEqualsAndHashCodes.GenerateGetHashCodeForAStruct(item)}
+        {GenerateHashCodes.GenerateForAStruct(item)}
 
         {Util.GenerateToStringReadOnly(item)}
 
         private readonly void EnsureInitialized()
         {{
-            if (!_isInitialized)
+            if (!IsInitialized())
             {{
 #if DEBUG
                 {DebugGeneration.GenerateMessageForUninitializedValueObject(item)}
@@ -127,7 +134,7 @@ using Vogen;
         {Util.GenerateDebuggerProxyForStructs(item)}
 
 }}
-{GenerateEfCoreExtensions.GenerateIfNeeded(item)}
+{GenerateEfCoreExtensions.GenerateInnerIfNeeded(item)}
 {Util.WriteCloseNamespace(item.FullNamespace)}";
     }
 }

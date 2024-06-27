@@ -1,8 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Vogen.Generators.Conversions;
 
 [assembly: InternalsVisibleTo("SmallTests")]
@@ -21,9 +23,36 @@ public static class Util
         new GenerateEfCoreTypeConversions(),
         new GenerateLinqToDbConversions(),
     };
+    
+    public static string SanitizeToALegalFilename(string input) => input.Replace('@', '_');
+
+    public static void TryWriteUsingUniqueFilename(string filename, SourceProductionContext context, SourceText sourceText)
+    {
+        int count = 0;
+        string hintName = filename;
+
+        while (true)
+        {
+            try
+            {
+                context.AddSource(hintName, sourceText);
+                return;
+            }
+            catch(ArgumentException)
+            {
+                if (++count >= 10)
+                {
+                    throw;
+                }
+
+                hintName = $"{count}{filename}";
+            }
+        }
+    }
+    
 
 
-    public static string GenerateCallToValidation(VoWorkItem workItem)
+    public static string GenerateCallToValidationAndThrowIfRequired(VoWorkItem workItem)
     {
         if (workItem.ValidateMethod is not null)
         {
@@ -46,11 +75,52 @@ public static class Util
         return string.Empty;
     }
 
+    public static string GenerateCallToValidationAndReturnFalseIfNeeded(VoWorkItem workItem)
+    {
+        if (workItem.ValidateMethod is not null)
+        {
+            return @$"var validation = {workItem.TypeToAugment.Identifier}.{workItem.ValidateMethod.Identifier.Value}(value);
+            if (validation != Vogen.Validation.Ok)
+            {{
+                vo = default;
+                return false;
+            }}
+";
+        }
+
+        return string.Empty;
+    }
+    
+    public static string GenerateNotNullWhenTrueAttribute() =>
+        """
+
+        #if NETCOREAPP3_0_OR_GREATER
+        [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+        #endif
+
+        """;
+
+
+    public static string GenerateCallToValidationAndReturnValueObjectOrErrorIfNeeded(SyntaxToken className, VoWorkItem workItem)
+    {
+        if (workItem.ValidateMethod is not null)
+        {
+            return @$"var validation = {workItem.TypeToAugment.Identifier}.{workItem.ValidateMethod.Identifier.Value}(value);
+            if (validation != Vogen.Validation.Ok)
+            {{
+                return new ValueObjectOrError<{className}>(validation);
+            }}
+";
+        }
+
+        return string.Empty;
+    }
+
     public static string GenerateCallToValidateForDeserializing(VoWorkItem workItem)
     {
         StringBuilder sb = new StringBuilder();
 
-        if (workItem.DeserializationStrictness.HasFlag(DeserializationStrictness.AllowKnownInstances))
+        if (workItem.Config.DeserializationStrictness.HasFlag(DeserializationStrictness.AllowKnownInstances))
         {
             foreach (var eachInstance in workItem.InstanceProperties)
             {
@@ -64,7 +134,7 @@ public static class Util
             return sb.ToString();
         }
 
-        if (workItem.DeserializationStrictness.HasFlag(DeserializationStrictness.RunMyValidationMethod))
+        if (workItem.Config.DeserializationStrictness.HasFlag(DeserializationStrictness.RunMyValidationMethod))
         {
             sb.AppendLine(@$"var validation = {workItem.TypeToAugment.Identifier}.{workItem.ValidateMethod.Identifier.Value}(value);
             if (validation != Vogen.Validation.Ok)
@@ -143,7 +213,7 @@ public static class Util
         return sb.ToString();
     }
 
-    private static string GenerateAnyConversionAttributesForDebuggerProxy(VoWorkItem item) => item.Conversions.ToString();
+    private static string GenerateAnyConversionAttributesForDebuggerProxy(VoWorkItem item) => item.Config.Conversions.ToString();
 
     public static string GenerateAnyConversionBodies(TypeDeclarationSyntax tds, VoWorkItem item)
     {
@@ -158,7 +228,7 @@ public static class Util
 
     public static string GenerateDebuggerProxyForStructs(VoWorkItem item)
     {
-        var createdWithMethod = item.DisableStackTraceRecordingInDebug
+        var createdWithMethod = item.Config.DisableStackTraceRecordingInDebug
             ? @"public global::System.String CreatedWith => ""the From method"""
             : @"public global::System.String CreatedWith => _t._stackTrace?.ToString() ?? ""the From method""";
         
@@ -174,9 +244,9 @@ $$"""
                     _t = t;
                 }
 
-                public global::System.Boolean IsInitialized => _t._isInitialized;
+                public global::System.Boolean IsInitialized => _t.IsInitialized();
                 public global::System.String UnderlyingType => "{{item.UnderlyingTypeFullName}}";
-                public global::System.String Value => _t._isInitialized ? _t._value.ToString() : "[not initialized]" ;
+                public global::System.String Value => _t.IsInitialized() ? _t._value.ToString() : "[not initialized]" ;
 
                 #if DEBUG
                     {{createdWithMethod}};
@@ -212,17 +282,43 @@ $$"""
     public static string GenerateYourAssemblyName() => typeof(Util).Assembly.GetName().Name!;
     public static string GenerateYourAssemblyVersion() => typeof(Util).Assembly.GetName().Version!.ToString();
 
-    public static string GenerateToString(VoWorkItem item) =>
-        item.UserProvidedOverloads.ToStringInfo.WasSupplied ? string.Empty
-            : $@"/// <summary>Returns the string representation of the underlying <see cref=""{item.UnderlyingTypeFullName}"" />.</summary>
-    /// <inheritdoc cref=""{item.UnderlyingTypeFullName}.ToString()"" />
-    public override global::System.String ToString() => _isInitialized ? Value.ToString() : ""[UNINITIALIZED]"";";
+    public static string GenerateToString(VoWorkItem item) => GenerateToString(item, false);
 
-    public static string GenerateToStringReadOnly(VoWorkItem item) =>
-        item.UserProvidedOverloads.ToStringInfo.WasSupplied ? string.Empty :
-            $@"/// <summary>Returns the string representation of the underlying type</summary>
-    /// <inheritdoc cref=""{item.UnderlyingTypeFullName}.ToString()"" />
-    public readonly override global::System.String ToString() =>_isInitialized ? Value.ToString() : ""[UNINITIALIZED]"";";
+    public static string GenerateToStringReadOnly(VoWorkItem item) => GenerateToString(item, true);
+
+    private static string GenerateToString(VoWorkItem item, bool isReadOnly)
+    {
+        string ro = isReadOnly ? " readonly" : string.Empty;
+        
+        return item.UserProvidedOverloads.ToStringInfo.WasSupplied
+            ? string.Empty
+            : $@"/// <summary>Returns the string representation of the underlying <see cref=""{item.UnderlyingTypeFullName}"" />.</summary>
+    public{ro} override global::System.String ToString() =>IsInitialized() ? Value.ToString() : ""[UNINITIALIZED]"";";
+    }
+
+    public static string GenerateGuidFactoryMethodIfNeeded(VoWorkItem item, TypeDeclarationSyntax tds)
+    {
+        if (item.UnderlyingTypeFullName == "System.Guid" && item.Config.Customizations.HasFlag(Customizations.AddFactoryMethodForGuids))
+        {
+            return $"public static {item.VoTypeName} FromNewGuid() {{ return From(global::System.Guid.NewGuid()); }}";
+        }
+
+        return string.Empty;
+    }
+
+    public static string GenerateIsInitializedMethod(bool @readonly, VoWorkItem item)
+    {
+        string ro = @readonly ? " readonly" : "";
+        string accessibility = item.Config.IsInitializedMethodGeneration == IsInitializedMethodGeneration.Generate ? "public" : "private";
+        return $$"""
+               [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+               #if VOGEN_NO_VALIDATION
+                 {{accessibility}}{{ro}} bool IsInitialized() => true;
+               #else
+                 {{accessibility}}{{ro}} bool IsInitialized() => _isInitialized;
+               #endif
+               """;
+    }
 }
 
 public static class DebugGeneration
@@ -233,7 +329,7 @@ public static class DebugGeneration
                        [global::System.Diagnostics.DebuggerTypeProxyAttribute(typeof({{className}}DebugView))]
                            [global::System.Diagnostics.DebuggerDisplayAttribute("Underlying type: {{itemUnderlyingType}}, Value = { _value }")]
                        """;
-        if (item.DebuggerAttributes == DebuggerAttributeGeneration.Basic)
+        if (item.Config.DebuggerAttributes == DebuggerAttributeGeneration.Basic)
         {
             return $@"/* Debug attributes omitted because the 'debuggerAttributes' flag is set to {nameof(DebuggerAttributeGeneration.Basic)} on the Vogen attribute.
 This is usually set to avoid issues in Rider where it doesn't fully handle the attributes support by Visual Studio and
@@ -249,7 +345,7 @@ causes Rider's debugger to crash.
 
     public static string GenerateStackTraceFieldIfNeeded(VoWorkItem item)
     {
-        if(item.DisableStackTraceRecordingInDebug)
+        if(item.Config.DisableStackTraceRecordingInDebug)
         {
             return string.Empty;
         }
@@ -262,13 +358,13 @@ causes Rider's debugger to crash.
 
     }
 
-    public static string SetStackTraceIfNeeded(VoWorkItem voWorkItem) => voWorkItem.DisableStackTraceRecordingInDebug
+    public static string SetStackTraceIfNeeded(VoWorkItem voWorkItem) => voWorkItem.Config.DisableStackTraceRecordingInDebug
         ? string.Empty
         : "_stackTrace = new global::System.Diagnostics.StackTrace();";
 
     public static string GenerateMessageForUninitializedValueObject(VoWorkItem item)
     {
-        if (item.DisableStackTraceRecordingInDebug)
+        if (item.Config.DisableStackTraceRecordingInDebug)
         {
             return $"""global::System.String message = "Use of uninitialized Value Object.";""";
             

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Shared;
 using VerifyTests;
 using VerifyXunit;
@@ -26,14 +28,14 @@ namespace SnapshotTests
 
         private readonly TargetFramework[] _allFrameworks =
         {
-            TargetFramework.Net6_0,
-            TargetFramework.Net7_0,
             TargetFramework.Net8_0,
 #if THOROUGH
+            TargetFramework.Net5_0,
+            TargetFramework.Net6_0,
+            TargetFramework.Net7_0,
             TargetFramework.Net4_6_1,
             TargetFramework.Net4_8,
             TargetFramework.NetCoreApp3_1,
-            TargetFramework.Net5_0,
 #endif
         };
 
@@ -50,6 +52,9 @@ namespace SnapshotTests
         private string _locale = string.Empty;
         private bool _ignoreInitialCompilationErrors;
         private ITestOutputHelper? _logger;
+        private readonly List<NuGetPackage> _additionalNuGetPackages = new();
+        private LanguageVersion _languageVersion = LanguageVersion.Default;
+        private bool _excludeStj = false;
 
         public async Task RunOnAllFrameworks() => await RunOn(_allFrameworks);
 
@@ -74,18 +79,6 @@ namespace SnapshotTests
         public async Task RunOn(params TargetFramework[] frameworks)
         {
             _ = _source ?? throw new InvalidOperationException("No source!");
-        
-// #if NET8_0
-//             // Only run .NET 8 tests when using the .NET 8 SDK (prevents assembly versioning issues with <7.0)
-//             frameworks = frameworks.Where(framework => framework == TargetFramework.Net8_0).ToArray();
-// #elif NET7_0
-//             // Only run .NET 7 tests when using the .NET 7 SDK (prevents assembly versioning issues with <6.0)
-//             frameworks = frameworks.Where(framework => framework == TargetFramework.Net7_0).ToArray();
-// #elif NET6_0
-//             // Alternatively, only run non-net7 tests when using the .NET 6 target
-//             // as .NET 6 will use the .NET standard Vogen binary (without C#11 support)
-//             frameworks = frameworks.Where(framework => framework != TargetFramework.Net7_0).ToArray();
-// #endif
 
             // Skips tests targeting specific frameworks that were excluded above
             // NOTE: Requires [SkippableFact] attribute to be added to single-framework tests
@@ -104,8 +97,8 @@ namespace SnapshotTests
 
                 using var scope = new AssertionScope();
 
-                var (diagnostics, output) = GetGeneratedOutput(_source, eachFramework);
-                diagnostics.Should().BeEmpty(@$"because the following source code should compile on {eachFramework}: " + _source);
+                (ImmutableArray<Diagnostic> diagnostics, SyntaxTree[] syntaxTrees) = await GetGeneratedOutput(_source, eachFramework);
+                diagnostics.Should().BeEmpty(@$"because the following source code should compile on {eachFramework}: " + Environment.NewLine + _source + Environment.NewLine);
 
                 var outputFolder = Path.Combine(_path, SnapshotUtils.GetSnapshotDirectoryName(eachFramework, _locale));
 
@@ -116,17 +109,20 @@ namespace SnapshotTests
                     verifySettings.AutoVerify();
 #endif
 
-                await Verifier.Verify(output, verifySettings).UseDirectory(outputFolder);
+                await Verifier.Verify(syntaxTrees.Select(s => s.ToString()), verifySettings).UseDirectory(outputFolder);
             }
         }
 
-        private (ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput(string source, TargetFramework targetFramework)
+        private async Task<(ImmutableArray<Diagnostic> Diagnostics, SyntaxTree[] GeneratedSource)> GetGeneratedOutput(string source, TargetFramework targetFramework)
         {
             var r = MetadataReference.CreateFromFile(typeof(ValueObjectAttribute).Assembly.Location);
 
-            var results = new ProjectBuilder()
-                .WithSource(source)
+            var results = await new ProjectBuilder()
+                .WithUserSource(source)
+                .WithNugetPackages(_additionalNuGetPackages)
                 .WithTargetFramework(targetFramework)
+                .WithLanguageVersion(_languageVersion)
+                .ShouldExcludeSystemTextJson(_excludeStj)
                 .GetGeneratedOutput<T>(_ignoreInitialCompilationErrors, r);
 
             return results;
@@ -136,6 +132,25 @@ namespace SnapshotTests
         {
             _logger = logger;
 
+            return this;
+        }
+
+        public SnapshotRunner<T> WithPackage(NuGetPackage package)
+        {
+            _additionalNuGetPackages.Add(package);
+
+            return this;
+        }
+
+        public SnapshotRunner<T> WithLanguageVersion(LanguageVersion languageVersion)
+        {
+            _languageVersion = languageVersion;
+            return this;
+        }
+
+        public SnapshotRunner<T> ExcludeSystemTextJsonNugetPackage()
+        {
+            _excludeStj = true;
             return this;
         }
     }
