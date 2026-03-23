@@ -2,7 +2,9 @@
 using Dapper;
 using LinqToDB.Mapping;
 
-[assembly: VogenDefaults(conversions: Conversions.Default | Conversions.Bson)]
+[assembly: VogenDefaults(
+    conversions: Conversions.Default | Conversions.Bson, 
+    staticAbstractsGeneration: StaticAbstractsGeneration.InstancesHaveInterfaceDefinition | StaticAbstractsGeneration.FactoryMethods)]
 
 namespace ConsumerTests;
 

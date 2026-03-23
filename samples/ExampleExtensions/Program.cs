@@ -32,24 +32,34 @@ static void WriteName(CustomerName? vo) => Console.WriteLine(vo?.Value ?? "null"
 
 
 [ValueObject<int>]
-public partial class CustomerId;
+public partial struct CustomerId;
 
 [ValueObject<string>]
 public partial class CustomerName;
 
-internal static class Extensions
+
+public static class VogenStructExtensions
 {
-    extension<TWrapper, TPrimitive>(IVogen<TWrapper, TPrimitive>) 
-        where TWrapper : IVogen<TWrapper, TPrimitive> 
-        where TPrimitive : struct
+    extension<TW, TP>(IVogen<TW, TP>) where TW : struct, IVogen<TW, TP> where TP : struct
     {
-        public static TWrapper? FromNullable(TPrimitive? value) => value is null ? default : TWrapper.From(value.Value);
+        public static TW? FromNullable(TP? value) => value is null ? null : TW.From(value.Value);
     }
-    
-    extension<TWrapper, TPrimitive>(IVogen<TWrapper, TPrimitive>)
-        where TWrapper : IVogen<TWrapper, TPrimitive>
-        where TPrimitive : class
+
+    extension<TW, TP>(IVogen<TW, TP>) where TW : struct, IVogen<TW, TP> where TP : class
     {
-        public static TWrapper? FromNullable(TPrimitive? value) => value is null ? default : TWrapper.From(value);
-    }    
+        public static TW? FromNullable(TP? value) => value is null ? null : TW.From(value);
+    }
+}
+
+public static class VogenClassExtensions
+{
+    extension<TW, TP>(IVogen<TW, TP>) where TW : class, IVogen<TW, TP> where TP : struct
+    {
+        public static TW? FromNullable(TP? value) => value is null ? null : TW.From(value.Value);
+    }
+
+    extension<TW, TP>(IVogen<TW, TP>) where TW : class, IVogen<TW, TP> where TP : class
+    {
+        public static TW? FromNullable(TP? value) => value is null ? null : TW.From(value);
+    }
 }
