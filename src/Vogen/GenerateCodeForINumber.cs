@@ -8,8 +8,8 @@ using Vogen.Generators;
 namespace Vogen;
 
 /// <summary>
-/// Generates the <see cref="System.Numerics.INumber{T}"/> implementation for value objects
-/// whose underlying primitive type implements <c>INumber&lt;TPrimitive&gt;</c>.
+/// Generates the <see cref="System.Numerics.INumber{T}"/> or <see cref="System.Numerics.INumberBase{T}"/>
+/// implementation for value objects whose underlying primitive type implements the corresponding interface.
 ///
 /// Static abstract interface members (e.g. <c>double.One</c>) cannot be called on concrete
 /// types in ordinary code — they require a constrained type parameter. So the generated code
@@ -20,43 +20,51 @@ namespace Vogen;
 /// </summary>
 public static class GenerateCodeForINumber
 {
+    private enum NumericMode { None, INumber, INumberBase }
+
     /// <summary>
-    /// Returns the <c>INumber&lt;WrapperType&gt;</c> interface declaration text if the
-    /// underlying primitive implements <c>INumber&lt;T&gt;</c> and C# 11+ is targeted.
+    /// Returns the numeric interface declaration text (<c>INumber&lt;WrapperType&gt;</c> or
+    /// <c>INumberBase&lt;WrapperType&gt;</c>) if the underlying primitive qualifies and C# 11+ is targeted.
     /// </summary>
     public static string GenerateInterfaceDefinitionsIfNeeded(string precedingText, GenerationParameters parameters)
     {
-        if (!IsEligible(parameters, out _))
+        var (mode, _) = DetermineMode(parameters);
+        if (mode == NumericMode.None)
             return string.Empty;
 
-        return $"{precedingText} global::System.Numerics.INumber<{parameters.WorkItem.TypeToAugment.Identifier}>";
+        var wrapperName = parameters.WorkItem.TypeToAugment.Identifier;
+        return mode == NumericMode.INumber
+            ? $"{precedingText} global::System.Numerics.INumber<{wrapperName}>"
+            : $"{precedingText} global::System.Numerics.INumberBase<{wrapperName}>";
     }
 
     /// <summary>
-    /// Generates all static members needed to implement <c>INumber&lt;WrapperType&gt;</c>,
+    /// Generates all static members needed to implement the numeric interface,
     /// skipping any members the user has already provided in their partial type.
     /// </summary>
     public static string GenerateINumberImplementationIfNeeded(GenerationParameters parameters)
     {
-        if (!IsEligible(parameters, out var iNumberSymbol))
+        var (mode, interfaceSymbol) = DetermineMode(parameters);
+        if (mode == NumericMode.None)
             return string.Empty;
 
         var wrapperSymbol = parameters.WorkItem.WrapperType;
 
-        // If the user has already implemented INumber<WrapperType> themselves, don't generate.
-        if (wrapperSymbol.DerivesFromOrImplementsAnyConstructionOf(iNumberSymbol))
+        // If the user has already implemented the interface themselves, don't generate.
+        if (wrapperSymbol.DerivesFromOrImplementsAnyConstructionOf(interfaceSymbol!))
             return string.Empty;
 
         var wrapperName = parameters.WorkItem.TypeToAugment.Identifier.ToString();
         var primitiveType = parameters.WorkItem.UnderlyingTypeFullNameWithGlobalAlias;
         var item = parameters.WorkItem;
+        bool isINumberBase = mode == NumericMode.INumberBase;
 
         var sb = new StringBuilder();
 
         // Private generic helpers let us call static abstract interface members, which
         // can only be called through a constrained type parameter, not directly on a
         // concrete type like `double`.
-        GenerateHelperMethods(sb);
+        GenerateHelperMethods(sb, isINumberBase);
 
         GenerateStaticProperties(sb, wrapperName, primitiveType, wrapperSymbol, item);
         GenerateBooleanChecks(sb, wrapperName, primitiveType, wrapperSymbol);
@@ -64,46 +72,63 @@ public static class GenerateCodeForINumber
         GenerateTwoParamWrapperMethods(sb, wrapperName, primitiveType, wrapperSymbol);
         GenerateGenericCreateMethods(sb, wrapperName, primitiveType, wrapperSymbol);
         GenerateTryConvertMethods(sb, wrapperName, primitiveType);
-        GenerateINumberMethods(sb, wrapperName, primitiveType, wrapperSymbol);
-        GenerateArithmeticOperators(sb, wrapperName, primitiveType, wrapperSymbol);
-        GenerateComparisonOperators(sb, wrapperName, wrapperSymbol);
 
-        // Only generate CompareTo if GenerateCodeForComparables isn't already doing it.
-        if (item.Config.Comparison != ComparisonGeneration.UseUnderlying)
+        if (!isINumberBase)
         {
-            GenerateCompareTo(sb, wrapperName, item);
+            GenerateINumberMethods(sb, wrapperName, primitiveType, wrapperSymbol);
+        }
+
+        bool isUnsignedInteger = IsUnsignedIntegerType(parameters.WorkItem.UnderlyingType);
+        GenerateArithmeticOperators(sb, wrapperName, primitiveType, wrapperSymbol, isINumberBase, isUnsignedInteger);
+
+        if (!isINumberBase)
+        {
+            GenerateComparisonOperators(sb, wrapperName, wrapperSymbol);
+
+            // Only generate CompareTo if GenerateCodeForComparables isn't already doing it.
+            if (item.Config.Comparison != ComparisonGeneration.UseUnderlying)
+            {
+                GenerateCompareTo(sb, wrapperName, item);
+            }
         }
 
         return sb.ToString();
     }
 
-    private static bool IsEligible(GenerationParameters parameters, out INamedTypeSymbol iNumberSymbol)
+    private static (NumericMode mode, INamedTypeSymbol? symbol) DetermineMode(GenerationParameters parameters)
     {
-        iNumberSymbol = null!;
-
-        if (parameters.WorkItem.Config.NumericsGeneration != NumericsGeneration.GenerateINumberInterfaceAndMethods)
-            return false;
-
         if (parameters.WorkItem.LanguageVersion < LanguageVersion.CSharp11)
-            return false;
-
-        var symbol = parameters.VogenKnownSymbols.INumberOfT;
-        if (symbol is null)
-            return false;
-
-        if (!parameters.WorkItem.UnderlyingType.DerivesFromOrImplementsAnyConstructionOf(symbol))
-            return false;
+            return (NumericMode.None, null);
 
         // INumber<T> requires IParsable<T> and ISpanParsable<T>. We can only fulfill
         // those requirements if the underlying type publicly exposes Parse/TryParse
         // methods (so Vogen can hoist them). Types like char implement INumber<char>
         // but their IParsable implementation is explicit-only and not hoistable.
         if (!parameters.WorkItem.ParsingInformation.UnderlyingDerivesFromIParsable)
-            return false;
+            return (NumericMode.None, null);
 
-        iNumberSymbol = symbol;
-        return true;
+        if (parameters.WorkItem.Config.NumericsGeneration != NumericsGeneration.Generate)
+            return (NumericMode.None, null);
+
+        var underlying = parameters.WorkItem.UnderlyingType;
+
+        var inumber = parameters.VogenKnownSymbols.INumberOfT;
+        if (inumber is not null && underlying.DerivesFromOrImplementsAnyConstructionOf(inumber))
+            return (NumericMode.INumber, inumber);
+
+        var ibase = parameters.VogenKnownSymbols.INumberBaseOfT;
+        if (ibase is not null && underlying.DerivesFromOrImplementsAnyConstructionOf(ibase))
+            return (NumericMode.INumberBase, ibase);
+
+        return (NumericMode.None, null);
     }
+
+    private static bool IsUnsignedIntegerType(ITypeSymbol type) =>
+        type.SpecialType is SpecialType.System_Byte
+            or SpecialType.System_UInt16
+            or SpecialType.System_UInt32
+            or SpecialType.System_UInt64
+            or SpecialType.System_UIntPtr;
 
     private static bool StaticMemberExists(INamedTypeSymbol wrapperSymbol, string memberName) =>
         wrapperSymbol.GetMembers(memberName).Any(m => m.IsStatic);
@@ -119,7 +144,7 @@ public static class GenerateCodeForINumber
     // constrained type parameter. These private helpers bridge that gap by forwarding
     // each call through `__T`, which the JIT resolves to the concrete primitive type.
     // -------------------------------------------------------------------------
-    private static void GenerateHelperMethods(StringBuilder sb)
+    private static void GenerateHelperMethods(StringBuilder sb, bool isINumberBase)
     {
         sb.AppendLine("#nullable disable");
         sb.AppendLine("    // Private helpers: forward static abstract INumberBase<T> / INumber<T> calls through a");
@@ -166,14 +191,18 @@ public static class GenerateCodeForINumber
         sb.AppendLine("    private static global::System.Boolean __TryConvertToSaturating<__T, __TOther>(__T value, out __TOther result) where __T : global::System.Numerics.INumberBase<__T> where __TOther : global::System.Numerics.INumberBase<__TOther> => __T.TryConvertToSaturating<__TOther>(value, out result);");
         sb.AppendLine("    private static global::System.Boolean __TryConvertToTruncating<__T, __TOther>(__T value, out __TOther result) where __T : global::System.Numerics.INumberBase<__T> where __TOther : global::System.Numerics.INumberBase<__TOther> => __T.TryConvertToTruncating<__TOther>(value, out result);");
 
-        // INumber<T> methods
-        sb.AppendLine("    private static __T __Clamp<__T>(__T value, __T min, __T max) where __T : global::System.Numerics.INumber<__T> => __T.Clamp(value, min, max);");
-        sb.AppendLine("    private static __T __CopySign<__T>(__T value, __T sign) where __T : global::System.Numerics.INumber<__T> => __T.CopySign(value, sign);");
-        sb.AppendLine("    private static __T __Max<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.Max(x, y);");
-        sb.AppendLine("    private static __T __MaxNumber<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.MaxNumber(x, y);");
-        sb.AppendLine("    private static __T __Min<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.Min(x, y);");
-        sb.AppendLine("    private static __T __MinNumber<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.MinNumber(x, y);");
-        sb.AppendLine("    private static global::System.Int32 __Sign<__T>(__T value) where __T : global::System.Numerics.INumber<__T> => __T.Sign(value);");
+        if (!isINumberBase)
+        {
+            // INumber<T> methods
+            sb.AppendLine("    private static __T __Clamp<__T>(__T value, __T min, __T max) where __T : global::System.Numerics.INumber<__T> => __T.Clamp(value, min, max);");
+            sb.AppendLine("    private static __T __CopySign<__T>(__T value, __T sign) where __T : global::System.Numerics.INumber<__T> => __T.CopySign(value, sign);");
+            sb.AppendLine("    private static __T __Max<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.Max(x, y);");
+            sb.AppendLine("    private static __T __MaxNumber<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.MaxNumber(x, y);");
+            sb.AppendLine("    private static __T __Min<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.Min(x, y);");
+            sb.AppendLine("    private static __T __MinNumber<__T>(__T x, __T y) where __T : global::System.Numerics.INumber<__T> => __T.MinNumber(x, y);");
+            sb.AppendLine("    private static global::System.Int32 __Sign<__T>(__T value) where __T : global::System.Numerics.INumber<__T> => __T.Sign(value);");
+        }
+
         sb.AppendLine("#nullable restore");
         sb.AppendLine();
     }
@@ -410,7 +439,7 @@ public static class GenerateCodeForINumber
         sb.AppendLine();
     }
 
-    private static void GenerateArithmeticOperators(StringBuilder sb, string wrapperName, string primitiveType, INamedTypeSymbol wrapperSymbol)
+    private static void GenerateArithmeticOperators(StringBuilder sb, string wrapperName, string primitiveType, INamedTypeSymbol wrapperSymbol, bool isINumberBase, bool isUnsignedInteger)
     {
         // Binary arithmetic operators — these use the concrete type's built-in C# operators,
         // which are regular static methods (not static abstract interface members), so they
@@ -439,7 +468,9 @@ public static class GenerateCodeForINumber
             sb.AppendLine($"    public static {wrapperName} operator /({wrapperName} left, {wrapperName} right) => From(({primitiveType})(left.Value / right.Value));");
         }
 
-        if (!wrapperSymbol.ImplementsOperator("op_Modulus"))
+        // INumber<T> requires IModulusOperators<T,T,T> (the % operator); INumberBase<T> does not.
+        // System.Complex, for example, has no modulo operator.
+        if (!isINumberBase && !wrapperSymbol.ImplementsOperator("op_Modulus"))
         {
             sb.AppendLine("    /// <inheritdoc />");
             sb.AppendLine($"    public static {wrapperName} operator %({wrapperName} left, {wrapperName} right) => From(({primitiveType})(left.Value % right.Value));");
@@ -449,7 +480,12 @@ public static class GenerateCodeForINumber
         if (!wrapperSymbol.ImplementsOperator("op_UnaryNegation"))
         {
             sb.AppendLine("    /// <inheritdoc />");
-            sb.AppendLine($"    public static {wrapperName} operator -({wrapperName} value) => From(({primitiveType})(-value.Value));");
+            // For unsigned integer types, unary `-` is not valid in C# (ulong) or narrows incorrectly (uint).
+            // Mirror what the BCL does: IUnaryNegationOperators<T,T> for unsigned types is 0 - value (wrapping).
+            string unaryNegBody = isUnsignedInteger
+                ? $"unchecked(default({primitiveType}) - value.Value)"
+                : $"({primitiveType})(-value.Value)";
+            sb.AppendLine($"    public static {wrapperName} operator -({wrapperName} value) => From({unaryNegBody});");
         }
 
         if (!wrapperSymbol.ImplementsOperator("op_UnaryPlus"))

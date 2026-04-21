@@ -3,8 +3,7 @@ using System.ComponentModel;
 namespace Vogen;
 
 /// <summary>
-/// Controls whether <c>INumber&lt;T&gt;</c> and related numeric interfaces are generated
-/// for value objects whose underlying type implements <c>INumber&lt;T&gt;</c>.
+/// Controls whether numeric interfaces are generated for value objects.
 /// Requires C# 11 or later.
 /// </summary>
 public enum NumericsGeneration
@@ -13,13 +12,15 @@ public enum NumericsGeneration
     Unspecified = -1,
 
     /// <summary>
-    /// Do not implement <c>INumber&lt;T&gt;</c>. This is the default.
+    /// Do not implement any numeric interfaces. This is the default.
     /// </summary>
     Omit = 0,
 
     /// <summary>
-    /// Implement <c>INumber&lt;T&gt;</c> and all required numeric interfaces if the underlying type
-    /// supports it and C# 11 or later is targeted.
+    /// Automatically implement the richest numeric interface the underlying type supports,
+    /// if C# 11 or later is targeted.
+    /// Implements <c>INumber&lt;T&gt;</c> for types such as <c>double</c> or <c>int</c>,
+    /// or <c>INumberBase&lt;T&gt;</c> for types such as <c>System.Complex</c>.
     /// </summary>
-    GenerateINumberInterfaceAndMethods = 1,
+    Generate = 1,
 }

@@ -53,7 +53,7 @@ namespace Vogen
         /// </para>
         /// </example>
         /// </param>
-        /// <param name="numericsGeneration">Specifies whether to generate <c>INumber&lt;T&gt;</c> and related interfaces—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
+        /// <param name="numericsGeneration">Specifies whether to generate numeric interfaces (<c>INumber&lt;T&gt;</c> or <c>INumberBase&lt;T&gt;</c> depending on the underlying type)—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
         public ValueObjectAttribute(
             Conversions conversions = Conversions.Unspecified,
             Type? throws = null!,
@@ -132,7 +132,7 @@ namespace Vogen
         /// </para>
         /// </example>
         /// </param>
-        /// <param name="numericsGeneration">Specifies whether to generate <c>INumber&lt;T&gt;</c> and related interfaces—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
+        /// <param name="numericsGeneration">Specifies whether to generate numeric interfaces (<c>INumber&lt;T&gt;</c> or <c>INumberBase&lt;T&gt;</c> depending on the underlying type)—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
         public ValueObjectAttribute(
             Type? underlyingType = null!,
             Conversions conversions = Conversions.Unspecified,

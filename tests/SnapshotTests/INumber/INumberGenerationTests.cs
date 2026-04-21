@@ -6,12 +6,45 @@ namespace SnapshotTests.INumber;
 public class INumberGenerationTests
 {
     [Fact]
+    public Task Generates_INumberBase_for_Complex_struct()
+    {
+        string source = """
+                        using System.Numerics;
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<Complex>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct ComplexQuantity { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public Task Generates_INumberBase_for_Complex_class()
+    {
+        string source = """
+                        using System.Numerics;
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<Complex>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial class ComplexQuantity { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+
+    [Fact]
     public Task Generates_INumber_for_double_struct()
     {
         string source = """
                         using Vogen;
                         namespace Whatever;
-                        [ValueObject<double>(numericsGeneration: NumericsGeneration.GenerateINumberInterfaceAndMethods)]
+                        [ValueObject<double>(numericsGeneration: NumericsGeneration.Generate)]
                         public partial struct Distance { }
                         """;
 
@@ -26,7 +59,7 @@ public class INumberGenerationTests
         string source = """
                         using Vogen;
                         namespace Whatever;
-                        [ValueObject<int>(numericsGeneration: NumericsGeneration.GenerateINumberInterfaceAndMethods)]
+                        [ValueObject<int>(numericsGeneration: NumericsGeneration.Generate)]
                         public partial struct Count { }
                         """;
 
@@ -41,8 +74,38 @@ public class INumberGenerationTests
         string source = """
                         using Vogen;
                         namespace Whatever;
-                        [ValueObject<double>(numericsGeneration: NumericsGeneration.GenerateINumberInterfaceAndMethods)]
+                        [ValueObject<double>(numericsGeneration: NumericsGeneration.Generate)]
                         public partial class Distance { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public Task Generates_INumber_for_uint_struct()
+    {
+        string source = """
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<uint>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct Count { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public Task Generates_INumber_for_ulong_struct()
+    {
+        string source = """
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<ulong>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct BigCount { }
                         """;
 
         return new SnapshotRunner<ValueObjectGenerator>()
@@ -59,7 +122,7 @@ public class INumberGenerationTests
         string source = """
                         using Vogen;
                         namespace Whatever;
-                        [ValueObject<double>(numericsGeneration: NumericsGeneration.GenerateINumberInterfaceAndMethods)]
+                        [ValueObject<double>(numericsGeneration: NumericsGeneration.Generate)]
                         public partial struct Angle
                         {
                             public static Angle operator +(Angle left, Angle right) => default;
