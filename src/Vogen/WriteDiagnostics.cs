@@ -107,7 +107,8 @@ internal sealed class InternalDiagnostics : IInternalDiagnostics
             .AppendLine($"IsInitializedMethodGeneration: {c.IsInitializedMethodGeneration.ToString()}")
             .AppendLine($"SystemTextJsonConverterFactoryGeneration: {c.SystemTextJsonConverterFactoryGeneration.ToString()}")
             .AppendLine($"OpenApiSchemaCustomizations: {c.OpenApiSchemaCustomizations.ToString()}")
-            .AppendLine($"StaticAbstractsGeneration: {c.StaticAbstractsGeneration.ToString()}");
+            .AppendLine($"StaticAbstractsGeneration: {c.StaticAbstractsGeneration.ToString()}")
+            .AppendLine($"NumericsGeneration: {c.NumericsGeneration.ToString()}");
     }
 
     public void RecordTargets(ImmutableArray<VoTarget> targets) => _targets = targets;

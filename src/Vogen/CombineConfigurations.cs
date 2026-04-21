@@ -150,6 +150,14 @@ public static class CombineConfigurations
             (var local, _) => local,
         };
 
+        NumericsGeneration numericsGeneration = (localValues.NumericsGeneration, globalValues?.NumericsGeneration) switch
+        {
+            (NumericsGeneration.Unspecified, null) => VogenConfiguration.DefaultInstance.NumericsGeneration,
+            (NumericsGeneration.Unspecified, NumericsGeneration.Unspecified) => VogenConfiguration.DefaultInstance.NumericsGeneration,
+            (NumericsGeneration.Unspecified, var global) => global.Value,
+            (var local, _) => local,
+        };
+
         var validationExceptionType = localValues.ValidationExceptionType ?? 
                                       globalValues?.ValidationExceptionType ?? 
                                       VogenConfiguration.DefaultInstance.ValidationExceptionType;
@@ -184,7 +192,8 @@ public static class CombineConfigurations
             StaticAbstractsGeneration: staticAbstractsGeneration,
             OpenApiSchemaCustomizations: openApiSchemaCustomizations,
             ExplicitlySpecifyTypeInValueObject: primitiveTypeMustBeExplicit,
-            PrimitiveEqualityGeneration: primitiveEqualityGeneration);
+            PrimitiveEqualityGeneration: primitiveEqualityGeneration,
+            NumericsGeneration: numericsGeneration);
     }
  
     /// If we don't have a global attribute, just use the default configuration as there

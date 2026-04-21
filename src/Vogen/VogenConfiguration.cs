@@ -22,7 +22,8 @@ public record VogenConfiguration(
     StaticAbstractsGeneration StaticAbstractsGeneration,
     OpenApiSchemaCustomizations OpenApiSchemaCustomizations,
     bool ExplicitlySpecifyTypeInValueObject,
-    PrimitiveEqualityGeneration PrimitiveEqualityGeneration)
+    PrimitiveEqualityGeneration PrimitiveEqualityGeneration,
+    NumericsGeneration NumericsGeneration)
 {
     // Don't add default values here, they should be in DefaultInstance.
 
@@ -50,5 +51,6 @@ public record VogenConfiguration(
         StaticAbstractsGeneration: StaticAbstractsGeneration.Omit,
         OpenApiSchemaCustomizations: OpenApiSchemaCustomizations.Omit,
         ExplicitlySpecifyTypeInValueObject: false,
-        PrimitiveEqualityGeneration: PrimitiveEqualityGeneration.GenerateOperatorsAndMethods);
+        PrimitiveEqualityGeneration: PrimitiveEqualityGeneration.GenerateOperatorsAndMethods,
+        NumericsGeneration: NumericsGeneration.Omit);
 }

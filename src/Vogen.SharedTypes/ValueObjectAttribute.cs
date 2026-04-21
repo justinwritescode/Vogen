@@ -53,6 +53,7 @@ namespace Vogen
         /// </para>
         /// </example>
         /// </param>
+        /// <param name="numericsGeneration">Specifies whether to generate <c>INumber&lt;T&gt;</c> and related interfaces—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
         public ValueObjectAttribute(
             Conversions conversions = Conversions.Unspecified,
             Type? throws = null!,
@@ -67,7 +68,8 @@ namespace Vogen
             ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified,
             TryFromGeneration tryFromGeneration = TryFromGeneration.Unspecified,
             IsInitializedMethodGeneration isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified,
-            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified) : base(
+            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified,
+            NumericsGeneration numericsGeneration = NumericsGeneration.Unspecified) : base(
             typeof(T),
             conversions,
             throws,
@@ -82,7 +84,8 @@ namespace Vogen
             parsableForPrimitives,
             tryFromGeneration,
             isInitializedMethodGeneration,
-            primitiveEqualityGeneration)
+            primitiveEqualityGeneration,
+            numericsGeneration)
         {
         }
     }
@@ -129,6 +132,7 @@ namespace Vogen
         /// </para>
         /// </example>
         /// </param>
+        /// <param name="numericsGeneration">Specifies whether to generate <c>INumber&lt;T&gt;</c> and related interfaces—defaults to <see cref="NumericsGeneration.Omit"/>.</param>
         public ValueObjectAttribute(
             Type? underlyingType = null!,
             Conversions conversions = Conversions.Unspecified,
@@ -144,7 +148,8 @@ namespace Vogen
             ParsableForPrimitives parsableForPrimitives = ParsableForPrimitives.Unspecified,
             TryFromGeneration tryFromGeneration = TryFromGeneration.Unspecified,
             IsInitializedMethodGeneration isInitializedMethodGeneration = IsInitializedMethodGeneration.Unspecified,
-            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified)
+            PrimitiveEqualityGeneration primitiveEqualityGeneration = PrimitiveEqualityGeneration.Unspecified,
+            NumericsGeneration numericsGeneration = NumericsGeneration.Unspecified)
         {
             // DO NOT ADD PARAMETERS HERE, INSTEAD, CREATE OVERLOADS (at least until a new major version).
             // This is because some users use reflection to find this attribute, and changing the amount
