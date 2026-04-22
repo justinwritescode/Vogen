@@ -114,6 +114,53 @@ public class INumberGenerationTests
     }
 
     [Fact]
+    public Task Generates_INumber_for_byte_struct()
+    {
+        string source = """
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<byte>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct SmallCount { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public Task Generates_INumber_for_ushort_struct()
+    {
+        string source = """
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<ushort>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct MediumCount { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
+    public Task Char_does_not_generate_INumber_because_IParsable_is_explicit_only()
+    {
+        // char implements INumber<char> but its IParsable<char> is explicit-only,
+        // so Vogen cannot hoist Parse/TryParse and correctly skips generation.
+        string source = """
+                        using Vogen;
+                        namespace Whatever;
+                        [ValueObject<char>(numericsGeneration: NumericsGeneration.Generate)]
+                        public partial struct Letter { }
+                        """;
+
+        return new SnapshotRunner<ValueObjectGenerator>()
+            .WithSource(source)
+            .RunOnAllFrameworks();
+    }
+
+    [Fact]
     public Task Custom_operator_prevents_duplicate_generation()
     {
         // User provides operator+; the generator must not emit a second one.

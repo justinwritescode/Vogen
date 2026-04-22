@@ -482,8 +482,10 @@ public static class GenerateCodeForINumber
             sb.AppendLine("    /// <inheritdoc />");
             // For unsigned integer types, unary `-` is not valid in C# (ulong) or narrows incorrectly (uint).
             // Mirror what the BCL does: IUnaryNegationOperators<T,T> for unsigned types is 0 - value (wrapping).
+            // The explicit cast back to primitiveType is required for sub-int types (byte, ushort) because
+            // their subtraction promotes to int in C#.
             string unaryNegBody = isUnsignedInteger
-                ? $"unchecked(default({primitiveType}) - value.Value)"
+                ? $"unchecked(({primitiveType})(default({primitiveType}) - value.Value))"
                 : $"({primitiveType})(-value.Value)";
             sb.AppendLine($"    public static {wrapperName} operator -({wrapperName} value) => From({unaryNegBody});");
         }

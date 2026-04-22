@@ -129,6 +129,12 @@ internal static class DiagnosticsCatalogue
         "Types referenced in conversion markers by be value objects",
         "Marker class '{0}' specifies a target value object '{1}', but that is not a value object");
 
+    private static readonly DiagnosticDescriptor _numericsGenerationNotApplicable = CreateDescriptor(
+        RuleIdentifiers.NumericsGenerationNotApplicable,
+        "NumericsGeneration.Generate has no effect",
+        "'{0}' has NumericsGeneration.Generate set, but the underlying type '{1}' does not implement INumberBase<T>. No numeric interface will be generated.",
+        DiagnosticSeverity.Warning);
+
     public static Diagnostic TypeCannotBeNested(INamedTypeSymbol typeModel, INamedTypeSymbol container) => 
         Create(_typeCannotBeNested, typeModel.Locations, typeModel.Name, container.Name);
 
@@ -202,8 +208,11 @@ internal static class DiagnosticsCatalogue
     public static Diagnostic BothImplicitAndExplicitCastsSpecified(INamedTypeSymbol voSymbol) =>
         Create(_bothImplicitAndExplicitCastsSpecified, voSymbol.Locations, voSymbol.Name); 
 
-    public static Diagnostic TypesReferencedInAConversionMarkerMustBeValueObjects(INamedTypeSymbol markerClassSymbol, INamedTypeSymbol voSymbol) => 
+    public static Diagnostic TypesReferencedInAConversionMarkerMustBeValueObjects(INamedTypeSymbol markerClassSymbol, INamedTypeSymbol voSymbol) =>
         Create(_typesReferencedInAConversionMarkerMustBeaValueObjects, voSymbol.Locations, markerClassSymbol.Name, voSymbol.Name);
+
+    public static Diagnostic NumericsGenerationNotApplicable(INamedTypeSymbol voSymbol, ITypeSymbol underlyingType) =>
+        Create(_numericsGenerationNotApplicable, voSymbol.Locations, voSymbol.Name, underlyingType.Name);
 
     private static DiagnosticDescriptor CreateDescriptor(string code, string title, string messageFormat, DiagnosticSeverity severity = DiagnosticSeverity.Error)
     {

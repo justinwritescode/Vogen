@@ -35,8 +35,8 @@ namespace generator
         private static readonly global::System.Collections.Generic.Dictionary<global::System.Type, global::System.Lazy<global::System.Text.Json.Serialization.JsonConverter>> _lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, global::System.Lazy<global::System.Text.Json.Serialization.JsonConverter>>
         {
             {
-                typeof(global::Whatever.BigCount),
-                new global::System.Lazy<global::System.Text.Json.Serialization.JsonConverter>(() => new global::Whatever.BigCount.BigCountSystemTextJsonConverter())
+                typeof(global::Whatever.MediumCount),
+                new global::System.Lazy<global::System.Text.Json.Serialization.JsonConverter>(() => new global::Whatever.MediumCount.MediumCountSystemTextJsonConverter())
             }
         };
         public override bool CanConvert(global::System.Type typeToConvert) => _lookup.ContainsKey(typeToConvert);
@@ -71,12 +71,12 @@ namespace Whatever
 {
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Vogen", "1.0.0.0")]
-    [global::System.Text.Json.Serialization.JsonConverter(typeof(BigCountSystemTextJsonConverter))]
-    [global::System.ComponentModel.TypeConverter(typeof(BigCountTypeConverter))]
-    [global::System.Diagnostics.DebuggerTypeProxyAttribute(typeof(BigCountDebugView))]
-    [global::System.Diagnostics.DebuggerDisplayAttribute("Underlying type: global::System.UInt64, Value = { _value }")]
+    [global::System.Text.Json.Serialization.JsonConverter(typeof(MediumCountSystemTextJsonConverter))]
+    [global::System.ComponentModel.TypeConverter(typeof(MediumCountTypeConverter))]
+    [global::System.Diagnostics.DebuggerTypeProxyAttribute(typeof(MediumCountDebugView))]
+    [global::System.Diagnostics.DebuggerDisplayAttribute("Underlying type: global::System.UInt16, Value = { _value }")]
     // ReSharper disable once UnusedType.Global
-    public partial struct BigCount : global::System.IEquatable<BigCount>, global::System.IEquatable<global::System.UInt64>, global::System.IComparable<BigCount>, global::System.IComparable, global::System.IParsable<BigCount>, global::System.ISpanParsable<BigCount>, global::System.IUtf8SpanParsable<BigCount>, global::System.IFormattable, global::System.ISpanFormattable, global::System.IUtf8SpanFormattable, global::System.IConvertible, global::System.Numerics.INumber<BigCount>
+    public partial struct MediumCount : global::System.IEquatable<MediumCount>, global::System.IEquatable<global::System.UInt16>, global::System.IComparable<MediumCount>, global::System.IComparable, global::System.IParsable<MediumCount>, global::System.ISpanParsable<MediumCount>, global::System.IUtf8SpanParsable<MediumCount>, global::System.IFormattable, global::System.ISpanFormattable, global::System.IUtf8SpanFormattable, global::System.IConvertible, global::System.Numerics.INumber<MediumCount>
     {
 #if DEBUG
 private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
@@ -84,11 +84,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if !VOGEN_NO_VALIDATION
         private readonly global::System.Boolean _isInitialized;
 #endif
-        private readonly global::System.UInt64 _value;
+        private readonly global::System.UInt16 _value;
         /// <summary>
-        /// Gets the underlying <see cref = "ulong "/> value if set, otherwise a <see cref = "global::Vogen.ValueObjectValidationException"/> is thrown.
+        /// Gets the underlying <see cref = "ushort "/> value if set, otherwise a <see cref = "global::Vogen.ValueObjectValidationException"/> is thrown.
         /// </summary>
-        public readonly global::System.UInt64 Value
+        public readonly global::System.UInt16 Value
         {
             [global::System.Diagnostics.DebuggerStepThroughAttribute]
             [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -101,7 +101,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
         [global::System.Diagnostics.DebuggerStepThroughAttribute]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public BigCount()
+        public MediumCount()
         {
 #if DEBUG
             _stackTrace = new global::System.Diagnostics.StackTrace();
@@ -113,7 +113,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
         }
 
         [global::System.Diagnostics.DebuggerStepThroughAttribute]
-        private BigCount(global::System.UInt64 value)
+        private MediumCount(global::System.UInt16 value)
         {
             _value = value;
 #if !VOGEN_NO_VALIDATION
@@ -130,9 +130,9 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
         /// <param name = "value">The underlying type.</param>
         /// <returns>An instance of this type.</returns>
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public static BigCount From(global::System.UInt64 value)
+        public static MediumCount From(global::System.UInt16 value)
         {
-            return new BigCount(value);
+            return new MediumCount(value);
         }
 
         /// <summary>
@@ -147,13 +147,13 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        global::System.UInt64 value, 
+        global::System.UInt16 value, 
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)]
 #endif
-        out BigCount vo)
+        out MediumCount vo)
         {
-            vo = new BigCount(value);
+            vo = new MediumCount(value);
             return true;
         }
 
@@ -164,9 +164,9 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
         /// </summary>
         /// <param name = "value">The primitive value.</param>
         /// <returns>A <see cref = "global::Vogen.ValueObjectOrError{T}"/> containing either the value object, or an error.</returns>
-        public static global::Vogen.ValueObjectOrError<BigCount> TryFrom(global::System.UInt64 value)
+        public static global::Vogen.ValueObjectOrError<MediumCount> TryFrom(global::System.UInt16 value)
         {
-            return new global::Vogen.ValueObjectOrError<BigCount>(new BigCount(value));
+            return new global::Vogen.ValueObjectOrError<MediumCount>(new MediumCount(value));
         }
 
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -177,57 +177,57 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #else
         public readonly bool IsInitialized() => _isInitialized;
 #endif
-        public static explicit operator BigCount(global::System.UInt64 value) => From(value);
-        public static explicit operator global::System.UInt64(BigCount value) => value.Value;
+        public static explicit operator MediumCount(global::System.UInt16 value) => From(value);
+        public static explicit operator global::System.UInt16(MediumCount value) => value.Value;
         // only called internally when something has been deserialized into
         // its primitive type.
-        private static BigCount __Deserialize(global::System.UInt64 value)
+        private static MediumCount __Deserialize(global::System.UInt16 value)
         {
-            return new BigCount(value);
+            return new MediumCount(value);
         }
 
-        public readonly global::System.Boolean Equals(BigCount other)
+        public readonly global::System.Boolean Equals(MediumCount other)
         {
             // It's possible to create uninitialized instances via converters such as EfCore (HasDefaultValue), which call Equals.
             // We treat anything uninitialized as not equal to anything, even other uninitialized instances of this type.
             if (!IsInitialized() || !other.IsInitialized())
                 return false;
-            return global::System.Collections.Generic.EqualityComparer<global::System.UInt64>.Default.Equals(Value, other.Value);
+            return global::System.Collections.Generic.EqualityComparer<global::System.UInt16>.Default.Equals(Value, other.Value);
         }
 
-        public global::System.Boolean Equals(BigCount other, global::System.Collections.Generic.IEqualityComparer<BigCount> comparer)
+        public global::System.Boolean Equals(MediumCount other, global::System.Collections.Generic.IEqualityComparer<MediumCount> comparer)
         {
             return comparer.Equals(this, other);
         }
 
-        public readonly global::System.Boolean Equals(global::System.UInt64 primitive)
+        public readonly global::System.Boolean Equals(global::System.UInt16 primitive)
         {
             return Value.Equals(primitive);
         }
 
         public readonly override global::System.Boolean Equals(global::System.Object obj)
         {
-            return obj is BigCount && Equals((BigCount)obj);
+            return obj is MediumCount && Equals((MediumCount)obj);
         }
 
-        public static global::System.Boolean operator ==(BigCount left, BigCount right) => left.Equals(right);
-        public static global::System.Boolean operator !=(BigCount left, BigCount right) => !(left == right);
-        public static global::System.Boolean operator ==(BigCount left, global::System.UInt64 right) => left.Value.Equals(right);
-        public static global::System.Boolean operator ==(global::System.UInt64 left, BigCount right) => right.Value.Equals(left);
-        public static global::System.Boolean operator !=(global::System.UInt64 left, BigCount right) => !(left == right);
-        public static global::System.Boolean operator !=(BigCount left, global::System.UInt64 right) => !(left == right);
-        public int CompareTo(BigCount other) => Value.CompareTo(other.Value);
+        public static global::System.Boolean operator ==(MediumCount left, MediumCount right) => left.Equals(right);
+        public static global::System.Boolean operator !=(MediumCount left, MediumCount right) => !(left == right);
+        public static global::System.Boolean operator ==(MediumCount left, global::System.UInt16 right) => left.Value.Equals(right);
+        public static global::System.Boolean operator ==(global::System.UInt16 left, MediumCount right) => right.Value.Equals(left);
+        public static global::System.Boolean operator !=(global::System.UInt16 left, MediumCount right) => !(left == right);
+        public static global::System.Boolean operator !=(MediumCount left, global::System.UInt16 right) => !(left == right);
+        public int CompareTo(MediumCount other) => Value.CompareTo(other.Value);
         public int CompareTo(object other)
         {
             if (other is null)
                 return 1;
-            if (other is BigCount x)
+            if (other is MediumCount x)
                 return CompareTo(x);
-            ThrowHelper.ThrowArgumentException("Cannot compare to object as it is not of type BigCount", nameof(other));
+            ThrowHelper.ThrowArgumentException("Cannot compare to object as it is not of type MediumCount", nameof(other));
             return 0;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{byte}, System.Globalization.NumberStyles, System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{byte}, System.Globalization.NumberStyles, System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -237,11 +237,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(utf8Text, style, provider, out var __v))
+            if (global::System.UInt16.TryParse(utf8Text, style, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -249,7 +249,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{byte}, System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{byte}, System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -259,11 +259,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(utf8Text, provider, out var __v))
+            if (global::System.UInt16.TryParse(utf8Text, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -271,7 +271,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{byte}, out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{byte}, out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -281,11 +281,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(utf8Text, out var __v))
+            if (global::System.UInt16.TryParse(utf8Text, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -293,7 +293,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{char}, System.Globalization.NumberStyles, System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{char}, System.Globalization.NumberStyles, System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -303,11 +303,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, style, provider, out var __v))
+            if (global::System.UInt16.TryParse(s, style, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -315,7 +315,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{char}, System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{char}, System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -325,11 +325,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, provider, out var __v))
+            if (global::System.UInt16.TryParse(s, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -337,7 +337,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(System.ReadOnlySpan{char}, out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(System.ReadOnlySpan{char}, out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -347,11 +347,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, out var __v))
+            if (global::System.UInt16.TryParse(s, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -359,7 +359,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(string? , System.Globalization.NumberStyles, System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(string? , System.Globalization.NumberStyles, System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -369,11 +369,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, style, provider, out var __v))
+            if (global::System.UInt16.TryParse(s, style, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -381,7 +381,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(string? , System.IFormatProvider? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(string? , System.IFormatProvider? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -391,11 +391,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, provider, out var __v))
+            if (global::System.UInt16.TryParse(s, provider, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -403,7 +403,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.TryParse(string? , out ulong)"/>
+        /// <inheritdoc cref = "ushort.TryParse(string? , out ushort)"/>
         /// <summary>
         /// </summary>
         /// <returns>
@@ -413,11 +413,11 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 #if NETCOREAPP3_0_OR_GREATER
 [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
-        out BigCount result)
+        out MediumCount result)
         {
-            if (global::System.UInt64.TryParse(s, out var __v))
+            if (global::System.UInt16.TryParse(s, out var __v))
             {
-                result = new BigCount(__v);
+                result = new MediumCount(__v);
                 return true;
             }
 
@@ -425,125 +425,125 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             return false;
         }
 
-        /// <inheritdoc cref = "ulong.Parse(System.ReadOnlySpan{byte}, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(System.ReadOnlySpan{byte}, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(global::System.ReadOnlySpan<byte> utf8Text, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
+        public static MediumCount Parse(global::System.ReadOnlySpan<byte> utf8Text, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(utf8Text, style, provider);
+            var r = global::System.UInt16.Parse(utf8Text, style, provider);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(System.ReadOnlySpan{byte}, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(System.ReadOnlySpan{byte}, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(global::System.ReadOnlySpan<byte> utf8Text, global::System.IFormatProvider provider)
+        public static MediumCount Parse(global::System.ReadOnlySpan<byte> utf8Text, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(utf8Text, provider);
+            var r = global::System.UInt16.Parse(utf8Text, provider);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(System.ReadOnlySpan{char}, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(System.ReadOnlySpan{char}, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(global::System.ReadOnlySpan<char> s, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
+        public static MediumCount Parse(global::System.ReadOnlySpan<char> s, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(s, style, provider);
+            var r = global::System.UInt16.Parse(s, style, provider);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(global::System.ReadOnlySpan<char> s, global::System.IFormatProvider provider)
+        public static MediumCount Parse(global::System.ReadOnlySpan<char> s, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(s, provider);
+            var r = global::System.UInt16.Parse(s, provider);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(string)"/>
+        /// <inheritdoc cref = "ushort.Parse(string)"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(string s)
+        public static MediumCount Parse(string s)
         {
-            var r = global::System.UInt64.Parse(s);
+            var r = global::System.UInt16.Parse(s);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(string, System.Globalization.NumberStyles)"/>
+        /// <inheritdoc cref = "ushort.Parse(string, System.Globalization.NumberStyles)"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(string s, global::System.Globalization.NumberStyles style)
+        public static MediumCount Parse(string s, global::System.Globalization.NumberStyles style)
         {
-            var r = global::System.UInt64.Parse(s, style);
+            var r = global::System.UInt16.Parse(s, style);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(string, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(string, System.Globalization.NumberStyles, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(string s, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
+        public static MediumCount Parse(string s, global::System.Globalization.NumberStyles style, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(s, style, provider);
+            var r = global::System.UInt16.Parse(s, style, provider);
             return From(r);
         }
 
-        /// <inheritdoc cref = "ulong.Parse(string, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.Parse(string, System.IFormatProvider? )"/>
         /// <summary>
         /// </summary>
         /// <returns>
         /// The value created by calling the Parse method on the primitive.
         /// </returns>
         /// <exception cref = "global::Vogen.ValueObjectValidationException">Thrown when the value can be parsed, but is not valid.</exception>
-        public static BigCount Parse(string s, global::System.IFormatProvider provider)
+        public static MediumCount Parse(string s, global::System.IFormatProvider provider)
         {
-            var r = global::System.UInt64.Parse(s, provider);
+            var r = global::System.UInt16.Parse(s, provider);
             return From(r);
         }
 
 #nullable disable
-        /// <inheritdoc cref = "ulong.ToString(string? , System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.ToString(string? , System.IFormatProvider? )"/>
         public string ToString([System.Diagnostics.CodeAnalysis.StringSyntaxAttribute("NumericFormat")] string format, global::System.IFormatProvider provider)
         {
             return IsInitialized() ? Value.ToString(format, provider) : "[UNINITIALIZED]";
         }
 
-        /// <inheritdoc cref = "ulong.TryFormat(System.Span{char}, out int, System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.TryFormat(System.Span{char}, out int, System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
         public bool TryFormat(global::System.Span<char> destination, out int charsWritten, [System.Diagnostics.CodeAnalysis.StringSyntaxAttribute("NumericFormat")] global::System.ReadOnlySpan<char> format, global::System.IFormatProvider provider)
         {
             charsWritten = default;
             return IsInitialized() ? Value.TryFormat(destination, out charsWritten, format, provider) : true;
         }
 
-        /// <inheritdoc cref = "ulong.TryFormat(System.Span{byte}, out int, System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.TryFormat(System.Span{byte}, out int, System.ReadOnlySpan{char}, System.IFormatProvider? )"/>
         public bool TryFormat(global::System.Span<byte> utf8Destination, out int bytesWritten, [System.Diagnostics.CodeAnalysis.StringSyntaxAttribute("NumericFormat")] global::System.ReadOnlySpan<char> format, global::System.IFormatProvider provider)
         {
             bytesWritten = default;
@@ -552,7 +552,7 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
 #nullable restore
 #nullable disable
-        /// <inheritdoc cref = "ulong.GetTypeCode()"/>
+        /// <inheritdoc cref = "ushort.GetTypeCode()"/>
         public System.TypeCode GetTypeCode()
         {
             return IsInitialized() ? Value.GetTypeCode() : default;
@@ -740,176 +740,176 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
             where __T : global::System.Numerics.INumber<__T> => __T.Sign(value);
 #nullable restore
         /// <inheritdoc/>
-        public static BigCount One => From(__GetOne<global::System.UInt64>());
+        public static MediumCount One => From(__GetOne<global::System.UInt16>());
         /// <inheritdoc/>
-        public static global::System.Int32 Radix => __GetRadix<global::System.UInt64>();
+        public static global::System.Int32 Radix => __GetRadix<global::System.UInt16>();
         /// <inheritdoc/>
-        public static BigCount Zero => From(__GetZero<global::System.UInt64>());
+        public static MediumCount Zero => From(__GetZero<global::System.UInt16>());
         /// <inheritdoc/>
-        public static BigCount AdditiveIdentity => From(__GetAdditiveIdentity<global::System.UInt64>());
+        public static MediumCount AdditiveIdentity => From(__GetAdditiveIdentity<global::System.UInt16>());
         /// <inheritdoc/>
-        public static BigCount MultiplicativeIdentity => From(__GetMultiplicativeIdentity<global::System.UInt64>());
+        public static MediumCount MultiplicativeIdentity => From(__GetMultiplicativeIdentity<global::System.UInt16>());
 
         /// <inheritdoc/>
-        public static global::System.Boolean IsCanonical(BigCount value) => __IsCanonical<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsCanonical(MediumCount value) => __IsCanonical<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsComplexNumber(BigCount value) => __IsComplexNumber<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsComplexNumber(MediumCount value) => __IsComplexNumber<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsEvenInteger(BigCount value) => __IsEvenInteger<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsEvenInteger(MediumCount value) => __IsEvenInteger<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsFinite(BigCount value) => __IsFinite<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsFinite(MediumCount value) => __IsFinite<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsImaginaryNumber(BigCount value) => __IsImaginaryNumber<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsImaginaryNumber(MediumCount value) => __IsImaginaryNumber<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsInfinity(BigCount value) => __IsInfinity<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsInfinity(MediumCount value) => __IsInfinity<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsInteger(BigCount value) => __IsInteger<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsInteger(MediumCount value) => __IsInteger<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsNaN(BigCount value) => __IsNaN<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsNaN(MediumCount value) => __IsNaN<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsNegative(BigCount value) => __IsNegative<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsNegative(MediumCount value) => __IsNegative<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsNegativeInfinity(BigCount value) => __IsNegativeInfinity<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsNegativeInfinity(MediumCount value) => __IsNegativeInfinity<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsNormal(BigCount value) => __IsNormal<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsNormal(MediumCount value) => __IsNormal<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsOddInteger(BigCount value) => __IsOddInteger<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsOddInteger(MediumCount value) => __IsOddInteger<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsPositive(BigCount value) => __IsPositive<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsPositive(MediumCount value) => __IsPositive<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsPositiveInfinity(BigCount value) => __IsPositiveInfinity<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsPositiveInfinity(MediumCount value) => __IsPositiveInfinity<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsRealNumber(BigCount value) => __IsRealNumber<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsRealNumber(MediumCount value) => __IsRealNumber<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsSubnormal(BigCount value) => __IsSubnormal<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsSubnormal(MediumCount value) => __IsSubnormal<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static global::System.Boolean IsZero(BigCount value) => __IsZero<global::System.UInt64>(value.Value);
+        public static global::System.Boolean IsZero(MediumCount value) => __IsZero<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static BigCount Abs(BigCount value) => From(__Abs<global::System.UInt64>(value.Value));
+        public static MediumCount Abs(MediumCount value) => From(__Abs<global::System.UInt16>(value.Value));
         /// <inheritdoc/>
-        public static BigCount MaxMagnitude(BigCount x, BigCount y) => From(__MaxMagnitude<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MaxMagnitude(MediumCount x, MediumCount y) => From(__MaxMagnitude<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount MaxMagnitudeNumber(BigCount x, BigCount y) => From(__MaxMagnitudeNumber<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MaxMagnitudeNumber(MediumCount x, MediumCount y) => From(__MaxMagnitudeNumber<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount MinMagnitude(BigCount x, BigCount y) => From(__MinMagnitude<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MinMagnitude(MediumCount x, MediumCount y) => From(__MinMagnitude<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount MinMagnitudeNumber(BigCount x, BigCount y) => From(__MinMagnitudeNumber<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MinMagnitudeNumber(MediumCount x, MediumCount y) => From(__MinMagnitudeNumber<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount CreateChecked<TOther>(TOther value)
-            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateChecked<global::System.UInt64, TOther>(value));
+        public static MediumCount CreateChecked<TOther>(TOther value)
+            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateChecked<global::System.UInt16, TOther>(value));
         /// <inheritdoc/>
-        public static BigCount CreateSaturating<TOther>(TOther value)
-            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateSaturating<global::System.UInt64, TOther>(value));
+        public static MediumCount CreateSaturating<TOther>(TOther value)
+            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateSaturating<global::System.UInt16, TOther>(value));
         /// <inheritdoc/>
-        public static BigCount CreateTruncating<TOther>(TOther value)
-            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateTruncating<global::System.UInt64, TOther>(value));
+        public static MediumCount CreateTruncating<TOther>(TOther value)
+            where TOther : global::System.Numerics.INumberBase<TOther> => From(__CreateTruncating<global::System.UInt16, TOther>(value));
 #nullable disable
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertFromChecked<TOther>(TOther value, out BigCount result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertFromChecked<TOther>(TOther value, out MediumCount result)
         {
             result = default;
-            if (!__TryConvertFromChecked<global::System.UInt64, TOther>(value, out global::System.UInt64 primitiveResult))
+            if (!__TryConvertFromChecked<global::System.UInt16, TOther>(value, out global::System.UInt16 primitiveResult))
                 return false;
             result = From(primitiveResult);
             return true;
         }
 
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertFromSaturating<TOther>(TOther value, out BigCount result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertFromSaturating<TOther>(TOther value, out MediumCount result)
         {
             result = default;
-            if (!__TryConvertFromSaturating<global::System.UInt64, TOther>(value, out global::System.UInt64 primitiveResult))
+            if (!__TryConvertFromSaturating<global::System.UInt16, TOther>(value, out global::System.UInt16 primitiveResult))
                 return false;
             result = From(primitiveResult);
             return true;
         }
 
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertFromTruncating<TOther>(TOther value, out BigCount result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertFromTruncating<TOther>(TOther value, out MediumCount result)
         {
             result = default;
-            if (!__TryConvertFromTruncating<global::System.UInt64, TOther>(value, out global::System.UInt64 primitiveResult))
+            if (!__TryConvertFromTruncating<global::System.UInt16, TOther>(value, out global::System.UInt16 primitiveResult))
                 return false;
             result = From(primitiveResult);
             return true;
         }
 
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertToChecked<TOther>(BigCount value, out TOther result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertToChecked<TOther>(MediumCount value, out TOther result)
         {
             result = default;
-            return __TryConvertToChecked<global::System.UInt64, TOther>(value.Value, out result);
+            return __TryConvertToChecked<global::System.UInt16, TOther>(value.Value, out result);
         }
 
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertToSaturating<TOther>(BigCount value, out TOther result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertToSaturating<TOther>(MediumCount value, out TOther result)
         {
             result = default;
-            return __TryConvertToSaturating<global::System.UInt64, TOther>(value.Value, out result);
+            return __TryConvertToSaturating<global::System.UInt16, TOther>(value.Value, out result);
         }
 
-        static global::System.Boolean global::System.Numerics.INumberBase<BigCount>.TryConvertToTruncating<TOther>(BigCount value, out TOther result)
+        static global::System.Boolean global::System.Numerics.INumberBase<MediumCount>.TryConvertToTruncating<TOther>(MediumCount value, out TOther result)
         {
             result = default;
-            return __TryConvertToTruncating<global::System.UInt64, TOther>(value.Value, out result);
+            return __TryConvertToTruncating<global::System.UInt16, TOther>(value.Value, out result);
         }
 
 #nullable restore
         /// <inheritdoc/>
-        public static BigCount Clamp(BigCount value, BigCount min, BigCount max) => From(__Clamp<global::System.UInt64>(value.Value, min.Value, max.Value));
+        public static MediumCount Clamp(MediumCount value, MediumCount min, MediumCount max) => From(__Clamp<global::System.UInt16>(value.Value, min.Value, max.Value));
         /// <inheritdoc/>
-        public static BigCount CopySign(BigCount value, BigCount sign) => From(__CopySign<global::System.UInt64>(value.Value, sign.Value));
+        public static MediumCount CopySign(MediumCount value, MediumCount sign) => From(__CopySign<global::System.UInt16>(value.Value, sign.Value));
         /// <inheritdoc/>
-        public static BigCount Max(BigCount x, BigCount y) => From(__Max<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount Max(MediumCount x, MediumCount y) => From(__Max<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount MaxNumber(BigCount x, BigCount y) => From(__MaxNumber<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MaxNumber(MediumCount x, MediumCount y) => From(__MaxNumber<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount Min(BigCount x, BigCount y) => From(__Min<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount Min(MediumCount x, MediumCount y) => From(__Min<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static BigCount MinNumber(BigCount x, BigCount y) => From(__MinNumber<global::System.UInt64>(x.Value, y.Value));
+        public static MediumCount MinNumber(MediumCount x, MediumCount y) => From(__MinNumber<global::System.UInt16>(x.Value, y.Value));
         /// <inheritdoc/>
-        public static global::System.Int32 Sign(BigCount value) => __Sign<global::System.UInt64>(value.Value);
+        public static global::System.Int32 Sign(MediumCount value) => __Sign<global::System.UInt16>(value.Value);
         /// <inheritdoc/>
-        public static BigCount operator +(BigCount left, BigCount right) => From((global::System.UInt64)(left.Value + right.Value));
+        public static MediumCount operator +(MediumCount left, MediumCount right) => From((global::System.UInt16)(left.Value + right.Value));
         /// <inheritdoc/>
-        public static BigCount operator -(BigCount left, BigCount right) => From((global::System.UInt64)(left.Value - right.Value));
+        public static MediumCount operator -(MediumCount left, MediumCount right) => From((global::System.UInt16)(left.Value - right.Value));
         /// <inheritdoc/>
-        public static BigCount operator *(BigCount left, BigCount right) => From((global::System.UInt64)(left.Value * right.Value));
+        public static MediumCount operator *(MediumCount left, MediumCount right) => From((global::System.UInt16)(left.Value * right.Value));
         /// <inheritdoc/>
-        public static BigCount operator /(BigCount left, BigCount right) => From((global::System.UInt64)(left.Value / right.Value));
+        public static MediumCount operator /(MediumCount left, MediumCount right) => From((global::System.UInt16)(left.Value / right.Value));
         /// <inheritdoc/>
-        public static BigCount operator %(BigCount left, BigCount right) => From((global::System.UInt64)(left.Value % right.Value));
+        public static MediumCount operator %(MediumCount left, MediumCount right) => From((global::System.UInt16)(left.Value % right.Value));
         /// <inheritdoc/>
-        public static BigCount operator -(BigCount value) => From(unchecked((global::System.UInt64)(default(global::System.UInt64) - value.Value)));
+        public static MediumCount operator -(MediumCount value) => From(unchecked((global::System.UInt16)(default(global::System.UInt16) - value.Value)));
         /// <inheritdoc/>
-        public static BigCount operator +(BigCount value) => From((global::System.UInt64)(+value.Value));
+        public static MediumCount operator +(MediumCount value) => From((global::System.UInt16)(+value.Value));
         /// <inheritdoc/>
-        public static BigCount operator ++(BigCount value)
+        public static MediumCount operator ++(MediumCount value)
         {
             var v = value.Value;
             return From(++v);
         }
 
         /// <inheritdoc/>
-        public static BigCount operator --(BigCount value)
+        public static MediumCount operator --(MediumCount value)
         {
             var v = value.Value;
             return From(--v);
         }
 
         /// <inheritdoc/>
-        public static global::System.Boolean operator <(BigCount left, BigCount right) => left.Value < right.Value;
+        public static global::System.Boolean operator <(MediumCount left, MediumCount right) => left.Value < right.Value;
         /// <inheritdoc/>
-        public static global::System.Boolean operator <=(BigCount left, BigCount right) => left.Value <= right.Value;
+        public static global::System.Boolean operator <=(MediumCount left, MediumCount right) => left.Value <= right.Value;
         /// <inheritdoc/>
-        public static global::System.Boolean operator>(BigCount left, BigCount right) => left.Value > right.Value;
+        public static global::System.Boolean operator>(MediumCount left, MediumCount right) => left.Value > right.Value;
         /// <inheritdoc/>
-        public static global::System.Boolean operator >=(BigCount left, BigCount right) => left.Value >= right.Value;
+        public static global::System.Boolean operator >=(MediumCount left, MediumCount right) => left.Value >= right.Value;
         public readonly override global::System.Int32 GetHashCode()
         {
-            return global::System.Collections.Generic.EqualityComparer<global::System.UInt64>.Default.GetHashCode(Value);
+            return global::System.Collections.Generic.EqualityComparer<global::System.UInt16>.Default.GetHashCode(Value);
         }
 
-        /// <inheritdoc cref = "ulong.ToString()"/>
+        /// <inheritdoc cref = "ushort.ToString()"/>
         public override global::System.String ToString() => IsInitialized() ? Value.ToString() ?? "" : "[UNINITIALIZED]";
-        /// <inheritdoc cref = "ulong.ToString(System.IFormatProvider? )"/>
+        /// <inheritdoc cref = "ushort.ToString(System.IFormatProvider? )"/>
         public global::System.String ToString(global::System.IFormatProvider provider) => IsInitialized() ? Value.ToString(provider) ?? "" : "[UNINITIALIZED]";
-        /// <inheritdoc cref = "ulong.ToString(string? )"/>
+        /// <inheritdoc cref = "ushort.ToString(string? )"/>
         public global::System.String ToString([System.Diagnostics.CodeAnalysis.StringSyntaxAttribute("NumericFormat")] string format) => IsInitialized() ? Value.ToString(format) ?? "" : "[UNINITIALIZED]";
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private readonly void EnsureInitialized()
@@ -926,29 +926,29 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
 #nullable disable
         /// <summary>
-        /// Converts a BigCount to or from JSON.
+        /// Converts a MediumCount to or from JSON.
         /// </summary>
-        public partial class BigCountSystemTextJsonConverter : global::System.Text.Json.Serialization.JsonConverter<BigCount>
+        public partial class MediumCountSystemTextJsonConverter : global::System.Text.Json.Serialization.JsonConverter<MediumCount>
         {
-            public override BigCount Read(ref global::System.Text.Json.Utf8JsonReader reader, global::System.Type typeToConvert, global::System.Text.Json.JsonSerializerOptions options)
+            public override MediumCount Read(ref global::System.Text.Json.Utf8JsonReader reader, global::System.Type typeToConvert, global::System.Text.Json.JsonSerializerOptions options)
             {
-                var primitive = global::System.Text.Json.JsonSerializer.Deserialize<global::System.UInt64>(ref reader, options);
+                var primitive = global::System.Text.Json.JsonSerializer.Deserialize<global::System.UInt16>(ref reader, options);
                 return DeserializeJson(primitive);
             }
 
-            public override void Write(global::System.Text.Json.Utf8JsonWriter writer, BigCount value, global::System.Text.Json.JsonSerializerOptions options)
+            public override void Write(global::System.Text.Json.Utf8JsonWriter writer, MediumCount value, global::System.Text.Json.JsonSerializerOptions options)
             {
                 global::System.Text.Json.JsonSerializer.Serialize(writer, value.Value, options);
             }
 
 #if NET6_0_OR_GREATER
-            public override BigCount ReadAsPropertyName(ref global::System.Text.Json.Utf8JsonReader reader, global::System.Type typeToConvert, global::System.Text.Json.JsonSerializerOptions options)
+            public override MediumCount ReadAsPropertyName(ref global::System.Text.Json.Utf8JsonReader reader, global::System.Type typeToConvert, global::System.Text.Json.JsonSerializerOptions options)
             {
-                var primitive = global::System.Text.Json.JsonSerializer.Deserialize<global::System.UInt64>(ref reader, options);
+                var primitive = global::System.Text.Json.JsonSerializer.Deserialize<global::System.UInt16>(ref reader, options);
                 return DeserializeJson(primitive);
             }
 
-            public override void WriteAsPropertyName(global::System.Text.Json.Utf8JsonWriter writer, BigCount value, global::System.Text.Json.JsonSerializerOptions options)
+            public override void WriteAsPropertyName(global::System.Text.Json.Utf8JsonWriter writer, MediumCount value, global::System.Text.Json.JsonSerializerOptions options)
             {
                 writer.WritePropertyName(global::System.Text.Json.JsonSerializer.Serialize(value.Value));
             }
@@ -962,35 +962,35 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
                 throw new global::System.Text.Json.JsonException(null, e);
             }
 
-            private static BigCount DeserializeJson(global::System.UInt64 value)
+            private static MediumCount DeserializeJson(global::System.UInt16 value)
             {
-                return new BigCount(value);
+                return new MediumCount(value);
             }
         }
 
 #nullable restore
 #nullable disable
-        class BigCountTypeConverter : global::System.ComponentModel.TypeConverter
+        class MediumCountTypeConverter : global::System.ComponentModel.TypeConverter
         {
             public override global::System.Boolean CanConvertFrom(global::System.ComponentModel.ITypeDescriptorContext context, global::System.Type sourceType)
             {
-                return sourceType == typeof(global::System.UInt64);
+                return sourceType == typeof(global::System.UInt16);
             }
 
             public override global::System.Object ConvertFrom(global::System.ComponentModel.ITypeDescriptorContext context, global::System.Globalization.CultureInfo culture, global::System.Object value)
             {
-                global::System.UInt64 ut = (global::System.UInt64)value;
-                return BigCount.__Deserialize(ut);
+                global::System.UInt16 ut = (global::System.UInt16)value;
+                return MediumCount.__Deserialize(ut);
             }
 
             public override bool CanConvertTo(global::System.ComponentModel.ITypeDescriptorContext context, global::System.Type sourceType)
             {
-                return sourceType == typeof(global::System.UInt64);
+                return sourceType == typeof(global::System.UInt16);
             }
 
             public override object ConvertTo(global::System.ComponentModel.ITypeDescriptorContext context, global::System.Globalization.CultureInfo culture, global::System.Object value, global::System.Type destinationType)
             {
-                if (value is BigCount idValue)
+                if (value is MediumCount idValue)
                 {
                     return idValue.Value;
                 }
@@ -1001,16 +1001,16 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
 #nullable restore
 #nullable disable
-        internal sealed class BigCountDebugView
+        internal sealed class MediumCountDebugView
         {
-            private readonly BigCount _t;
-            BigCountDebugView(BigCount t)
+            private readonly MediumCount _t;
+            MediumCountDebugView(MediumCount t)
             {
                 _t = t;
             }
 
             public global::System.Boolean IsInitialized => _t.IsInitialized();
-            public global::System.String UnderlyingType => "System.UInt64";
+            public global::System.String UnderlyingType => "System.UInt16";
             public global::System.String Value => _t.IsInitialized() ? _t._value.ToString() : "[not initialized]";
 #if DEBUG
         public global::System.String CreatedWith => _t._stackTrace.ToString() ?? "the From method";

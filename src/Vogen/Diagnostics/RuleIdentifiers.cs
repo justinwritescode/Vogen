@@ -43,4 +43,5 @@ public static class RuleIdentifiers
     public const string DoNotCompareWithPrimitivesInEfCore = "VOG034";
     public const string VoReferencedInAConversionMarkerMustExplicitlySpecifyPrimitive = "VOG035";
     public const string BothImplicitAndExplicitCastsSpecified = "VOG036";
+    public const string NumericsGenerationNotApplicable = "VOG037";
 }

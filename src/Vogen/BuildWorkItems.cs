@@ -89,7 +89,16 @@ internal static class BuildWorkItems
         }
 
         INamedTypeSymbol underlyingType = config.UnderlyingType;
-        
+
+        if (config.NumericsGeneration == NumericsGeneration.Generate)
+        {
+            var ibase = vogenKnownSymbols.INumberBaseOfT;
+            if (ibase is not null && !underlyingType.DerivesFromOrImplementsAnyConstructionOf(ibase))
+            {
+                context.ReportDiagnostic(DiagnosticsCatalogue.NumericsGenerationNotApplicable(voSymbolInformation, underlyingType));
+            }
+        }
+
         IEnumerable<InstanceProperties> instanceProperties =
             TryBuildInstanceProperties(allAttributes, voSymbolInformation, context, underlyingType, vogenKnownSymbols).ToList();
 

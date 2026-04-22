@@ -22,5 +22,5 @@ public enum NumericsGeneration
     /// Implements <c>INumber&lt;T&gt;</c> for types such as <c>double</c> or <c>int</c>,
     /// or <c>INumberBase&lt;T&gt;</c> for types such as <c>System.Complex</c>.
     /// </summary>
-    Generate = 1,
+    Generate = 1
 }
