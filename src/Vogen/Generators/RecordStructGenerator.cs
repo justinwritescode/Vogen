@@ -36,6 +36,7 @@ public class RecordStructGenerator : IGenerateValueObjectSourceCode
         {GenerateCodeForComparables.GenerateInterfaceDefinitionsIfNeeded(", ", item)}
         {GenerateCodeForIParsableInterfaceDeclarations.GenerateIfNeeded(", ", item)}
         {GenerateCodeForTryFormat.GenerateInterfaceDefinitionsIfNeeded(", ", parameters)}
+        {GenerateCodeForINumber.GenerateInterfaceDefinitionsIfNeeded(", ", parameters)}
         {GenerateCodeForStaticAbstracts.GenerateInterfaceDefinitionIfNeeded(", ", item)}
         {GenerateCodeForXmlSerializable.GenerateInterfaceDefinitionIfNeeded(", ", item)}
     {{
@@ -131,6 +132,8 @@ public class RecordStructGenerator : IGenerateValueObjectSourceCode
         {GenerateCodeForTryParse.GenerateAnyHoistedTryParseMethods(item)}{GenerateCodeForParse.GenerateAnyHoistedParseMethods(item)}
 
         {GenerateCodeForTryFormat.GenerateAnyHoistedTryFormatMethods(parameters)}
+
+        {GenerateCodeForINumber.GenerateINumberImplementationIfNeeded(parameters)}
 
         {GenerateCodeForHashCodes.GenerateForAStruct(item)}
 

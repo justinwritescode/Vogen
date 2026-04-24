@@ -36,6 +36,8 @@ Most values are present in both `ValueObject` and `VogenDefaults`. The parameter
 * `tryFromGeneration` - specifies what to write for `TryFrom` methods—defaults to `TryFromGeneration.GenerateBoolAndErrorOrMethods`
 * `isInitializedMethodGeneration` - specifies whether to generate an `IsInitialized()` method - defaults to `IsInitializedMethodGeneration.Generate`
 * `primitiveEqualityGeneration` - specified whether to generate primitive comparison operators.
+* `numericsGeneration` - specifies whether to generate numeric interfaces. Use `NumericsGeneration.Generate` to automatically implement `INumber<T>` (for types such as `double`, `int`, `uint`) or `INumberBase<T>` (for types such as `System.Complex`) based on what the underlying type supports. Requires C# 11 or later. Defaults to `NumericsGeneration.Omit`.
+  > **Note:** Types whose `IParsable<T>` implementation is explicit-only (e.g. `char`) will not have numeric interfaces generated even if `Generate` is specified, because Vogen cannot hoist `Parse`/`TryParse`. A [VOG037](Analyzer-Rules.md) warning is emitted if the underlying type does not implement `INumberBase<T>` at all.
 
 The values that are specified only to global configuration are:
 
