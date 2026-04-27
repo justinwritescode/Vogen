@@ -1,0 +1,30 @@
+[
+  {
+    "assignment_id": "vogen-initial",
+    "timestamp": "2026-04-26T14:22:18.123Z",
+    "universe": "The Usual Suspects",
+    "team_size": 4,
+    "agents": [
+      {
+        "persistent_name": "Keaton",
+        "role": "Lead",
+        "domain": "Architecture, decisions, code review"
+      },
+      {
+        "persistent_name": "Fenster",
+        "role": "Backend Dev",
+        "domain": "Generator templates, conversions, code emission"
+      },
+      {
+        "persistent_name": "Dallas",
+        "role": "Frontend Dev",
+        "domain": "Analyzer diagnostics, CodeFixer logic"
+      },
+      {
+        "persistent_name": "Hockney",
+        "role": "Tester",
+        "domain": "Snapshot tests, AnalyzerTests, consumer validation"
+      }
+    ]
+  }
+]
