@@ -404,20 +404,20 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
 #nullable restore
 #nullable disable
-        class internal_readonly_partial_record_structConversions_NewtonsoftJson___Conversions_SystemTextJson___Conversions_EfCoreValueConverter___Conversions_DapperTypeHandler___Conversions_LinqToDbValueConverterlongNewtonsoftJsonConverter : Newtonsoft.Json.JsonConverter
+        class internal_readonly_partial_record_structConversions_NewtonsoftJson___Conversions_SystemTextJson___Conversions_EfCoreValueConverter___Conversions_DapperTypeHandler___Conversions_LinqToDbValueConverterlongNewtonsoftJsonConverter : global::Newtonsoft.Json.JsonConverter
         {
             public override bool CanConvert(System.Type objectType)
             {
                 return objectType == typeof(internal_readonly_partial_record_structConversions_NewtonsoftJson___Conversions_SystemTextJson___Conversions_EfCoreValueConverter___Conversions_DapperTypeHandler___Conversions_LinqToDbValueConverterlong);
             }
 
-            public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+            public override void WriteJson(global::Newtonsoft.Json.JsonWriter writer, object value, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var id = (internal_readonly_partial_record_structConversions_NewtonsoftJson___Conversions_SystemTextJson___Conversions_EfCoreValueConverter___Conversions_DapperTypeHandler___Conversions_LinqToDbValueConverterlong)value;
                 serializer.Serialize(writer, id.Value);
             }
 
-            public override object ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+            public override object ReadJson(global::Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var result = serializer.Deserialize<global::System.Int64?>(reader);
                 return result.HasValue ? internal_readonly_partial_record_structConversions_NewtonsoftJson___Conversions_SystemTextJson___Conversions_EfCoreValueConverter___Conversions_DapperTypeHandler___Conversions_LinqToDbValueConverterlong.__Deserialize(result.Value) : null;

@@ -732,20 +732,20 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
 
 #nullable restore
 #nullable disable
-        class MyIntVoNewtonsoftJsonConverter : Newtonsoft.Json.JsonConverter
+        class MyIntVoNewtonsoftJsonConverter : global::Newtonsoft.Json.JsonConverter
         {
             public override bool CanConvert(System.Type objectType)
             {
                 return objectType == typeof(MyIntVo);
             }
 
-            public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+            public override void WriteJson(global::Newtonsoft.Json.JsonWriter writer, object value, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var id = (MyIntVo)value;
                 serializer.Serialize(writer, id.Value);
             }
 
-            public override object ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+            public override object ReadJson(global::Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var result = serializer.Deserialize<global::System.Int32?>(reader);
                 return result.HasValue ? MyIntVo.__Deserialize(result.Value) : null;

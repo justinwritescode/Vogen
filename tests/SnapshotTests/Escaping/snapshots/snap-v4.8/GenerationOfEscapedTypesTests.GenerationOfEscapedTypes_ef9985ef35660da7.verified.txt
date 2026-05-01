@@ -468,20 +468,20 @@ private readonly global::System.Diagnostics.StackTrace _stackTrace  = null!;
         }
 
 #nullable disable
-        class escapedTestspublic_sealed_partial_record_classConversions_NewtonsoftJsondoubleNewtonsoftJsonConverter : Newtonsoft.Json.JsonConverter
+        class escapedTestspublic_sealed_partial_record_classConversions_NewtonsoftJsondoubleNewtonsoftJsonConverter : global::Newtonsoft.Json.JsonConverter
         {
             public override bool CanConvert(System.Type objectType)
             {
                 return objectType == typeof(escapedTestspublic_sealed_partial_record_classConversions_NewtonsoftJsondouble);
             }
 
-            public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+            public override void WriteJson(global::Newtonsoft.Json.JsonWriter writer, object value, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var id = (escapedTestspublic_sealed_partial_record_classConversions_NewtonsoftJsondouble)value;
                 serializer.Serialize(writer, id.Value);
             }
 
-            public override object ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+            public override object ReadJson(global::Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, global::Newtonsoft.Json.JsonSerializer serializer)
             {
                 var result = serializer.Deserialize<global::System.Double?>(reader);
                 return result.HasValue ? escapedTestspublic_sealed_partial_record_classConversions_NewtonsoftJsondouble.__Deserialize(result.Value) : null;
