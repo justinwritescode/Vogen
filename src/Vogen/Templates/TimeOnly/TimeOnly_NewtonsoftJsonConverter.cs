@@ -1,5 +1,5 @@
-﻿
-        public class VOTYPENewtonsoftJsonConverter : global::Newtonsoft.Json.JsonConverter
+
+        class VOTYPENewtonsoftJsonConverter : global::Newtonsoft.Json.JsonConverter
         {
             public override bool CanConvert(System.Type objectType)
             {
