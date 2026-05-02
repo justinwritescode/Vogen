@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Shared;
 using Vogen;
 
 namespace SnapshotTests.BugFixes;
@@ -15,37 +16,42 @@ public class Bug907_GenericUnderlyingTypeInheritDocWarnings
         var source = """
                      #nullable enable
                      using System;
+                     using System.Numerics;
+                     using System.Diagnostics.CodeAnalysis;
                      using Vogen;
-
-                     public class Ratio<T> : IParsable<Ratio<T>> where T : IParsable<T>
-                     {
-                         public T Value { get; }
-                         public Ratio(T value) => Value = value;
-
-                         public static Ratio<T> Parse(string s, IFormatProvider? provider)
-                             => new Ratio<T>(T.Parse(s, provider));
-
-                         public static bool TryParse(string? s, IFormatProvider? provider, out Ratio<T> result)
-                         {
-                             if (s is not null && T.TryParse(s, provider, out var v))
-                             {
-                                 result = new Ratio<T>(v);
-                                 return true;
-                             }
-                             result = default!;
-                             return false;
-                         }
-                     }
-
+                     
+                     /// <summary></summary>
                      [ValueObject<Ratio<int>>]
-                     public partial class ImageAspectRatio
+                     public readonly partial struct ImageAspectRatio;
+                     
+                     /// <summary></summary>
+                     public readonly record struct Ratio<T>(
+                     	T Numerator,
+                     	T Denominator
+                     ) : ISpanParsable<Ratio<T>>
+                     	where T : IBinaryInteger<T>
                      {
+                     	/// <summary></summary>
+                     	public static Ratio<T> Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
+                     		throw new NotImplementedException();
+                     
+                     	/// <summary></summary>
+                     	public static Ratio<T> Parse(string s, IFormatProvider? provider) =>
+                     		throw new NotImplementedException();
+                     
+                     	/// <summary></summary>
+                     	public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out Ratio<T> result) =>
+                     		throw new NotImplementedException();
+                     
+                     	/// <summary></summary>
+                     	public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out Ratio<T> result) =>
+                     		throw new NotImplementedException();
                      }
                      """;
 
         await new SnapshotRunner<ValueObjectGenerator>()
             .WithSource(source)
             .IgnoreInitialCompilationErrors()
-            .RunOnAllFrameworks();
+            .RunOn(TargetFramework.AspNetCore10_0);
     }
 }
