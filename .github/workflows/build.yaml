@@ -15,6 +15,8 @@ jobs:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -39,6 +41,7 @@ jobs:
 
   run-snapshots:
     name: run-snapshots
+    needs: build
     runs-on: windows-latest
     timeout-minutes: 60
     steps:

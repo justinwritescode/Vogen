@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared;
 using Vogen;
 using VerifyCS = AnalyzerTests.Verifiers.CSharpAnalyzerVerifier<Vogen.Rules.DoNotCompareWithPrimitivesInEfCoreAnalyzer>;
@@ -286,7 +285,7 @@ public class DoNotCompareWithPrimitivesInEfCoreAnalyzerTests
 
             if (output.Diagnostics.Length > 0)
             {
-                throw new AssertFailedException(
+                throw new Xunit.Sdk.XunitException(
                     $"""
                      Expected user source to be error and generated code to be free from errors:
                                                                      User source: {userSource}
@@ -434,7 +433,7 @@ public class DoNotCompareWithPrimitivesInEfCoreAnalyzerTests
 
             if (output.Diagnostics.Length > 0)
             {
-                throw new AssertFailedException(
+                throw new Xunit.Sdk.XunitException(
                     $"""
                      Expected user source to be error and generated code to be free from errors:
                                                                      User source: {userSource}
