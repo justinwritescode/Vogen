@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- Version and PackageVersion are handled in Directory.Build.targets -->
-    <TargetFrameworks>net9.0;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <Nullable>enable</Nullable>
@@ -18,6 +18,14 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" PrivateAssets="all"/>
+    <PackageReference Update="MinVer" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

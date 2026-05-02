@@ -13,6 +13,10 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Refit" Version="8.0.0" />
         <PackageReference Include="ServiceStack.Text" Version="8.2.2" />
+        <PackageReference Update="MinVer" Version="7.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(UseLocallyBuiltPackage)' != ''">

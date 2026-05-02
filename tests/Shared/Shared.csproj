@@ -10,10 +10,18 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.Formats.Asn1" Version="9.0.0" />
+    <PackageReference Include="System.Formats.Asn1" Version="10.0.7" />
     
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzer.Testing" Version="1.1.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+    <PackageReference Update="MinVer" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
