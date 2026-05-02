@@ -118,27 +118,20 @@ exec { & dotnet clean Consumers.sln -c Release --verbosity $verbosity}
 # Restore the project using the custom config file, restoring packages to a local folder
 exec { & dotnet restore Consumers.sln -p UseLocallyBuiltPackage=true --force --no-cache --packages $localPackages --configfile ./nuget.private.config --verbosity $verbosity }
 
-# Run both build tasks asynchronously
-
-$debugTask = Start-Process "dotnet" "build Consumers.sln --configuration Debug --no-restore --verbosity $verbosity" -NoNewWindow -PassThru
+# Run builds in parallel - Debug uses solution filter to exclude Vogen.Benchmarks
+# (Benchmarks always build Release regardless of config; filter prevents the parallel file lock)
+$debugTask = Start-Process "dotnet" "build Consumers.NoBenchmarks.slnf --configuration Debug --no-restore --verbosity $verbosity" -NoNewWindow -PassThru
 $releaseTask = Start-Process "dotnet" "build Consumers.sln --configuration Release --no-restore --verbosity $verbosity" -NoNewWindow -PassThru
 
-# Wait for both tasks to complete
 $debugTask.WaitForExit()
 $releaseTask.WaitForExit()
 
-if ($null -ne $debugTask.ExitCode -and $debugTask.ExitCode -ne 0) {
-    Write-Host "debug build returned " + $debugTask.ExitCode
-    exit -1
+if ($debugTask.ExitCode -ne 0) {
+    throw "Exec: Debug build failed with exit code $($debugTask.ExitCode)"
 }
-if ($null -ne $releaseTask.ExitCode -and $releaseTask.ExitCode -ne 0) {
-    Write-Host "release build returned " + $releaseTask.ExitCode
-    exit -1
+if ($releaseTask.ExitCode -ne 0) {
+    throw "Exec: Release build failed with exit code $($releaseTask.ExitCode)"
 }
-
-
-#exec { & dotnet build Consumers.sln -c Debug --no-restore --verbosity $verbosity }
-#exec { & dotnet build Consumers.sln -c Release --no-restore --verbosity $verbosity }
 
 WriteStage("Running consumer tests in debug with the local version of the NuGet package:" +$version)
 exec { & dotnet test ./tests/ConsumerTests -c Debug --no-build --no-restore --verbosity $verbosity }
