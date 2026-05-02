@@ -6,62 +6,53 @@ on:
   pull_request:
     branches: [ '*' ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  ubuntu-latest:
-    name: ubuntu-latest
-    runs-on: ubuntu-latest
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5.2.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             10.0.x
             9.0.x
             8.0.x
             3.1.x
-      - name: Build and Test
-        run: ./Build.ps1
-        shell: pwsh
-  windows-latest:
-    name: windows-latest
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5.2.0
+      - uses: actions/cache@v4
         with:
-          dotnet-version: |
-            10.0.x
-            9.0.x
-            8.0.x
-            3.1.x
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Build and Test
         run: ./Build.ps1
         shell: pwsh
+
   run-snapshots:
     name: run-snapshots
     runs-on: windows-latest
+    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5.2.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             10.0.x
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: ${{ runner.os }}-nuget-
       - name: Run Snapshots
         run: ./RunSnapshots.ps1
-        shell: pwsh
-  macOS-latest:
-    name: macOS-latest
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5.2.0
-        with:
-          dotnet-version: |
-            10.0.x
-            9.0.x
-            8.0.x
-            3.1.x
-      - name: Build and Test
-        run: ./Build.ps1
         shell: pwsh
 
