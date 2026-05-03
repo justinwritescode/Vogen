@@ -28,7 +28,7 @@ public static class Hoisting
 
         var inheritDocRef = isExplicitInterfaceImplementation
             ? interfaceSymbol.ToString()
-            : methodSymbol.ToString()!
+            : methodSymbol.OriginalDefinition.ToString()!
                 .Replace("<", "{")
                 .Replace(">", "}");
 

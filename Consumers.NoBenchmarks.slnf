@@ -1,0 +1,18 @@
+{
+  "solution": {
+    "path": "Consumers.sln",
+    "projects": [
+      "samples\\Vogen.Examples\\Vogen.Examples.csproj",
+      "tests\\ConsumerTests\\ConsumerTests.csproj",
+      "samples\\WebApplication\\WebApplication.csproj",
+      "samples\\WebApplicationConsumer\\WebApplicationConsumer.csproj",
+      "samples\\AotTrimmedSample\\AotTrimmedSample.csproj",
+      "samples\\Onion\\Domain\\Domain.csproj",
+      "samples\\Onion\\Infra\\Infra.csproj",
+      "samples\\OrleansExample\\OrleansExample.csproj",
+      "samples\\WebApplication.Shared\\WebApplication.Shared.csproj",
+      "samples\\MultiTarget\\MultiTarget.csproj",
+      "samples\\ExampleExtensions\\ExampleExtensions.csproj"
+    ]
+  }
+}

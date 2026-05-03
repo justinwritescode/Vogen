@@ -129,7 +129,7 @@ internal static class GenerateCodeForParse
         string parameterNames = BuildParameterNamesForParse(methodSymbol);
         string staticOrNot = methodSymbol.IsStatic ? "static " : string.Empty;
 
-        var inheritDocRef = methodSymbol.ToString()!
+        var inheritDocRef = methodSymbol.OriginalDefinition.ToString()!
             .Replace("<", "{")
             .Replace(">", "}");
 
