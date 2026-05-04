@@ -26,6 +26,10 @@
     <ItemGroup Condition=" '$(OpenApiMode)' == 'MicrosoftAndScalar'">
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
         <PackageReference Include="Scalar.AspNetCore" Version="1.1.1"/>
+        <PackageReference Update="MinVer" Version="7.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(OpenApiMode)' == 'Swashbuckle-net8'">

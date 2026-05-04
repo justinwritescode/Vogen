@@ -66,13 +66,24 @@
 
     <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\netstandard2.0\Vogen.SharedTypes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\netstandard2.0\Vogen.SharedTypes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
-    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net9.0\Vogen.SharedTypes.dll" Pack="true" PackagePath="lib\net9.0" Visible="true" />
-    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net9.0\Vogen.SharedTypes.xml" Pack="true" PackagePath="lib\net9.0" Visible="true" />
-    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net9.0\Vogen.SharedTypes.xml" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
+    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net10.0\Vogen.SharedTypes.dll" Pack="true" PackagePath="lib\net10.0" Visible="true" />
+    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net10.0\Vogen.SharedTypes.xml" Pack="true" PackagePath="lib\net10.0" Visible="true" />
+    <None Include="$(MSBuildThisFileDirectory)\..\Vogen\bin\roslyn4.12\$(Configuration)\net10.0\Vogen.SharedTypes.xml" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Vogen.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="MinVer" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   

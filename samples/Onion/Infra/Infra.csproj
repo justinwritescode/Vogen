@@ -14,6 +14,10 @@
 
     <ItemGroup Condition=" '$(UseLocallyBuiltPackage)' != ''">
         <PackageReference Include="Vogen" Version="999.9.*"/>
+        <PackageReference Update="MinVer" Version="7.0.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup Condition=" '$(UseLocallyBuiltPackage)' == ''">
